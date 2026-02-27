@@ -22,6 +22,11 @@ public class TicketService {
     private final TicketRepository ticketRepository;
     private final UserRepository userRepository;
 
+    public Ticket findById(Long id) {
+        return ticketRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Ticket non trouvé avec l'ID: " + id));
+    }
+
     @Transactional
     public TicketResponse createTicket(TicketRequest request) {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();

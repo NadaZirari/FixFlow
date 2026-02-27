@@ -72,6 +72,10 @@ public class CommentaireService {
         return commentaireRepository.findInternalCommentsByTicket(ticketId);
     }
     
+    public User findByAuteurEmail(String email) {
+        return userService.findByEmail(email);
+    }
+
     public List<Commentaire> findByAuteur(Long auteurId) {
         User auteur = userService.findById(auteurId);
         return commentaireRepository.findByAuteur(auteur);

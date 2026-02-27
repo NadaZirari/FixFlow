@@ -1,5 +1,6 @@
 package com.fixflow.backend.config;
 
+import com.fixflow.backend.security.JwtAuthenticationFilter;
 import com.fixflow.backend.service.UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,9 +22,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
     
     private final UserService userService;
-    private final JwtAuthFilter jwtAuthFilter;
+    private final JwtAuthenticationFilter jwtAuthFilter;
     
-    public SecurityConfig(UserService userService, JwtAuthFilter jwtAuthFilter) {
+    public SecurityConfig(UserService userService, JwtAuthenticationFilter jwtAuthFilter) {
         this.userService = userService;
         this.jwtAuthFilter = jwtAuthFilter;
     }
