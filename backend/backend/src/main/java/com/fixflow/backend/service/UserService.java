@@ -4,9 +4,6 @@ import com.fixflow.backend.entity.User;
 import com.fixflow.backend.enums.Role;
 import com.fixflow.backend.enums.TypeAbonnement;
 import com.fixflow.backend.repository.UserRepository;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,7 +12,7 @@ import java.util.List;
 
 @Service
 @Transactional
-public class UserService implements UserDetailsService {
+public class UserService {
     
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -97,11 +94,5 @@ public class UserService implements UserDetailsService {
         User user = findById(userId);
         user.setTypeAbonnement(TypeAbonnement.GRATUIT);
         userRepository.save(user);
-    }
-    
-    @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        return userRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("Utilisateur non trouvé: " + email));
     }
 }
