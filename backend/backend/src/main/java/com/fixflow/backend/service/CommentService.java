@@ -55,7 +55,7 @@ public class CommentService {
         return CommentResponse.builder()
                 .id(commentaire.getId())
                 .contenu(commentaire.getContenu())
-                .date(commentaire.getDateCommentaire())
+                .date(commentaire.getDate())
                 .type(commentaire.getType())
                 .auteurNom(commentaire.getAuteur().getNom())
                 .build();
