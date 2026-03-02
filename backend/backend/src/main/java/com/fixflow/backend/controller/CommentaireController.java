@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/commentaires")
+@RequestMapping("/api/v1/commentaires")
 @CrossOrigin(origins = "*", maxAge = 3600)
 public class CommentaireController {
     

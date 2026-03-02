@@ -84,8 +84,45 @@ public class User implements UserDetails {
         this.motDePasse = motDePasse;
     }
     
+    // Spring Security UserDetails implementation
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
+    }
+
+    @Override
+    public String getPassword() {
+        return motDePasse;
+    }
+
+    @Override
+    public String getUsername() {
+        return email;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return estActif;
+    }
+    
     // Getters et Setters
     public Long getId() { return id; }
+
     public void setId(Long id) { this.id = id; }
     
     public String getNom() { return nom; }
@@ -124,42 +161,6 @@ public class User implements UserDetails {
     public Set<Notification> getNotifications() { return notifications; }
     public void setNotifications(Set<Notification> notifications) { this.notifications = notifications; }
     
-    // UserDetails implementation
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
-    }
-
-    @Override
-    public String getPassword() {
-        return motDePasse;
-    }
-
-    @Override
-    public String getUsername() {
-        return email;
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return estActif;
-    }
-
     // Méthodes métier
     public boolean peutCreerTicket() {
         if (typeAbonnement == TypeAbonnement.PREMIUM) {
