@@ -5,6 +5,8 @@ import com.fixflow.backend.entity.Ticket;
 import com.fixflow.backend.entity.User;
 import com.fixflow.backend.enums.TypeNotification;
 import com.fixflow.backend.repository.NotificationRepository;
+import com.fixflow.backend.repository.TicketRepository;
+import com.fixflow.backend.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,15 +17,15 @@ import java.util.List;
 public class NotificationService {
     
     private final NotificationRepository notificationRepository;
-    private final UserService userService;
-    private final TicketService ticketService;
+    private final UserRepository userRepository;
+    private final TicketRepository ticketRepository;
     
     public NotificationService(NotificationRepository notificationRepository, 
-                             UserService userService, 
-                             TicketService ticketService) {
+                             UserRepository userRepository, 
+                             TicketRepository ticketRepository) {
         this.notificationRepository = notificationRepository;
-        this.userService = userService;
-        this.ticketService = ticketService;
+        this.userRepository = userRepository;
+        this.ticketRepository = ticketRepository;
     }
     
     public List<Notification> findAll() {
@@ -36,12 +38,14 @@ public class NotificationService {
     }
     
     public Notification create(Notification notification) {
-        User destinataire = userService.findById(notification.getDestinataire().getId());
+        User destinataire = userRepository.findById(notification.getDestinataire().getId())
+                .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
         
         notification.setDestinataire(destinataire);
         
         if (notification.getTicket() != null) {
-            Ticket ticket = ticketService.findById(notification.getTicket().getId());
+            Ticket ticket = ticketRepository.findById(notification.getTicket().getId())
+                    .orElseThrow(() -> new RuntimeException("Ticket non trouvé"));
             notification.setTicket(ticket);
         }
         
@@ -64,7 +68,8 @@ public class NotificationService {
     }
     
     public List<Notification> findByDestinataire(Long destinataireId) {
-        User destinataire = userService.findById(destinataireId);
+        User destinataire = userRepository.findById(destinataireId)
+                .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
         return notificationRepository.findByDestinataire(destinataire);
     }
     
@@ -95,15 +100,18 @@ public class NotificationService {
     }
     
     public Notification createNotification(TypeNotification type, String message, Long destinataireId, Long ticketId) {
-        User destinataire = userService.findById(destinataireId);
-        Ticket ticket = ticketService.findById(ticketId);
+        User destinataire = userRepository.findById(destinataireId)
+                .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
+        Ticket ticket = ticketRepository.findById(ticketId)
+                .orElseThrow(() -> new RuntimeException("Ticket non trouvé"));
         
         Notification notification = new Notification(type, message, destinataire, ticket);
         return notificationRepository.save(notification);
     }
     
     public Notification createNotification(TypeNotification type, String message, Long destinataireId) {
-        User destinataire = userService.findById(destinataireId);
+        User destinataire = userRepository.findById(destinataireId)
+                .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
         
         Notification notification = new Notification(type, message, destinataire);
         return notificationRepository.save(notification);
