@@ -50,6 +50,14 @@ public class CommentaireService {
         User auteur = userService.findByEmail(email);
         Ticket ticket = ticketService.findById(ticketId);
         
+        // Vérification des droits : Seul l'auteur du ticket ou l'agent assigné peut commenter
+        boolean estAuteur = ticket.getUser().getId().equals(auteur.getId());
+        boolean estAgentAssigne = ticket.getAgent() != null && ticket.getAgent().getId().equals(auteur.getId());
+
+        if (!estAuteur && !estAgentAssigne) {
+            throw new RuntimeException("Accès refusé : Seul l'auteur du ticket ou l'agent assigné peut ajouter un commentaire.");
+        }
+        
         Commentaire commentaire = new Commentaire();
         commentaire.setContenu(request.getContenu());
         commentaire.setType(request.getType() != null ? request.getType() : TypeCommentaire.PUBLIC);
