@@ -42,6 +42,15 @@ public class TicketController {
         return ResponseEntity.ok(ticketService.assignTicket(id));
     }
 
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
+    public ResponseEntity<TicketResponse> updateTicket(
+            @PathVariable Long id,
+            @RequestBody TicketRequest request
+    ) {
+        return ResponseEntity.ok(ticketService.updateTicket(id, request));
+    }
+
     @PutMapping("/{id}/status")
     @PreAuthorize("hasAnyRole('SUPPORT', 'ADMIN')")
     public ResponseEntity<TicketResponse> updateStatus(

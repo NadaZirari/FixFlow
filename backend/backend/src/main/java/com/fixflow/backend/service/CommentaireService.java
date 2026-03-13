@@ -1,14 +1,18 @@
 package com.fixflow.backend.service;
 
+import com.fixflow.backend.dto.CommentRequest;
+import com.fixflow.backend.dto.CommentResponse;
 import com.fixflow.backend.entity.Commentaire;
 import com.fixflow.backend.entity.Ticket;
 import com.fixflow.backend.entity.User;
 import com.fixflow.backend.enums.TypeCommentaire;
 import com.fixflow.backend.repository.CommentaireRepository;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -26,32 +30,42 @@ public class CommentaireService {
         this.userService = userService;
     }
     
-    public List<Commentaire> findAll() {
-        return commentaireRepository.findAll();
+    public List<CommentResponse> findAll() {
+        return commentaireRepository.findAll().stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
     }
     
+    public CommentResponse findResponseById(Long id) {
+        return mapToResponse(findById(id));
+    }
+
     public Commentaire findById(Long id) {
         return commentaireRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Commentaire non trouvé avec l'ID: " + id));
     }
     
-    public Commentaire create(Commentaire commentaire) {
-        Ticket ticket = ticketService.findById(commentaire.getTicket().getId());
-        User auteur = userService.findById(commentaire.getAuteur().getId());
+    public CommentResponse create(CommentRequest request, Long ticketId) {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        User auteur = userService.findByEmail(email);
+        Ticket ticket = ticketService.findById(ticketId);
         
+        Commentaire commentaire = new Commentaire();
+        commentaire.setContenu(request.getContenu());
+        commentaire.setType(request.getType() != null ? request.getType() : TypeCommentaire.PUBLIC);
         commentaire.setTicket(ticket);
         commentaire.setAuteur(auteur);
         
-        return commentaireRepository.save(commentaire);
+        return mapToResponse(commentaireRepository.save(commentaire));
     }
     
-    public Commentaire update(Long id, Commentaire commentaireDetails) {
+    public CommentResponse update(Long id, CommentRequest request) {
         Commentaire commentaire = findById(id);
-        
-        commentaire.setContenu(commentaireDetails.getContenu());
-        commentaire.setType(commentaireDetails.getType());
-        
-        return commentaireRepository.save(commentaire);
+        commentaire.setContenu(request.getContenu());
+        if (request.getType() != null) {
+            commentaire.setType(request.getType());
+        }
+        return mapToResponse(commentaireRepository.save(commentaire));
     }
     
     public void delete(Long id) {
@@ -59,44 +73,35 @@ public class CommentaireService {
         commentaireRepository.delete(commentaire);
     }
     
-    public List<Commentaire> findByTicket(Long ticketId) {
+    public List<CommentResponse> findByTicket(Long ticketId) {
         Ticket ticket = ticketService.findById(ticketId);
-        return commentaireRepository.findByTicket(ticket);
+        return commentaireRepository.findByTicket(ticket).stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
     }
     
-    public List<Commentaire> findPublicCommentsByTicket(Long ticketId) {
-        return commentaireRepository.findPublicCommentsByTicket(ticketId);
+    public List<CommentResponse> findPublicCommentsByTicket(Long ticketId) {
+        return commentaireRepository.findPublicCommentsByTicket(ticketId).stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
     }
     
-    public List<Commentaire> findInternalCommentsByTicket(Long ticketId) {
-        return commentaireRepository.findInternalCommentsByTicket(ticketId);
+    public List<CommentResponse> findInternalCommentsByTicket(Long ticketId) {
+        return commentaireRepository.findInternalCommentsByTicket(ticketId).stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
     }
     
-    public User findByAuteurEmail(String email) {
-        return userService.findByEmail(email);
+    public CommentResponse mapToResponse(Commentaire commentaire) {
+        return CommentResponse.builder()
+                .id(commentaire.getId())
+                .contenu(commentaire.getContenu())
+                .date(commentaire.getDate())
+                .type(commentaire.getType())
+                .auteurNom(commentaire.getAuteur().getNom())
+                .build();
     }
 
-    public List<Commentaire> findByAuteur(Long auteurId) {
-        User auteur = userService.findById(auteurId);
-        return commentaireRepository.findByAuteur(auteur);
-    }
-    
-    public Commentaire addPublicComment(String contenu, Long ticketId, Long auteurId) {
-        Ticket ticket = ticketService.findById(ticketId);
-        User auteur = userService.findById(auteurId);
-        
-        Commentaire commentaire = new Commentaire(contenu, ticket, auteur, TypeCommentaire.PUBLIC);
-        return commentaireRepository.save(commentaire);
-    }
-    
-    public Commentaire addInternalComment(String contenu, Long ticketId, Long auteurId) {
-        Ticket ticket = ticketService.findById(ticketId);
-        User auteur = userService.findById(auteurId);
-        
-        Commentaire commentaire = new Commentaire(contenu, ticket, auteur, TypeCommentaire.INTERNE);
-        return commentaireRepository.save(commentaire);
-    }
-    
     public long countByTicket(Long ticketId) {
         return commentaireRepository.countByTicket(ticketId);
     }

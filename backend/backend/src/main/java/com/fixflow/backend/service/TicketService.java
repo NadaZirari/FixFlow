@@ -21,6 +21,7 @@ public class TicketService {
 
     private final TicketRepository ticketRepository;
     private final UserRepository userRepository;
+    private final NotificationService notificationService;
 
     public Ticket findById(Long id) {
         return ticketRepository.findById(id)
@@ -44,6 +45,14 @@ public class TicketService {
         Ticket savedTicket = ticketRepository.save(ticket);
         user.incrementerNombreTickets();
         userRepository.save(user);
+
+        // Notification de création
+        notificationService.createNotification(
+            com.fixflow.backend.enums.TypeNotification.NOUVEAU_TICKET,
+            "Votre ticket '" + ticket.getTitre() + "' a été créé avec succès.",
+            user.getId(),
+            savedTicket.getId()
+        );
 
         return mapToResponse(savedTicket);
     }
@@ -74,6 +83,29 @@ public class TicketService {
                 .orElseThrow(() -> new RuntimeException("Ticket non trouvé"));
 
         ticket.attribuerAgent(agent);
+        Ticket savedTicket = ticketRepository.save(ticket);
+
+        // Notification à l'utilisateur
+        notificationService.createNotification(
+            com.fixflow.backend.enums.TypeNotification.TICKET_ATTRIBUE,
+            "Votre ticket '" + ticket.getTitre() + "' a été attribué à " + agent.getNom() + ".",
+            ticket.getUser().getId(),
+            savedTicket.getId()
+        );
+
+        return mapToResponse(savedTicket);
+    }
+
+    @Transactional
+    public TicketResponse updateTicket(Long id, TicketRequest request) {
+        Ticket ticket = ticketRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Ticket non trouvé"));
+        
+        ticket.setTitre(request.getTitre());
+        ticket.setDescription(request.getDescription());
+        ticket.setPriorite(request.getPriorite());
+        ticket.setCategorie(request.getCategorie());
+        
         return mapToResponse(ticketRepository.save(ticket));
     }
 
@@ -89,7 +121,17 @@ public class TicketService {
             ticket.archiver();
         }
         
-        return mapToResponse(ticketRepository.save(ticket));
+        Ticket savedTicket = ticketRepository.save(ticket);
+
+        // Notification de changement de statut
+        notificationService.createNotification(
+            statut == StatutTicket.RESOLU ? com.fixflow.backend.enums.TypeNotification.TICKET_RESOLU : com.fixflow.backend.enums.TypeNotification.CHANGEMENT_STATUT,
+            "Le statut de votre ticket '" + ticket.getTitre() + "' est maintenant : " + statut.getDisplayName(),
+            ticket.getUser().getId(),
+            savedTicket.getId()
+        );
+
+        return mapToResponse(savedTicket);
     }
 
     private TicketResponse mapToResponse(Ticket ticket) {

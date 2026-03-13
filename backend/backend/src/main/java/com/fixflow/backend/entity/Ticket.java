@@ -3,6 +3,7 @@ package com.fixflow.backend.entity;
 import com.fixflow.backend.enums.StatutTicket;
 import com.fixflow.backend.enums.PrioriteTicket;
 import com.fixflow.backend.enums.CategorieTicket;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -57,16 +58,20 @@ public class Ticket {
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonIgnoreProperties({"tickets", "commentaires", "notifications"})
     private User user;
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "agent_id")
+    @JsonIgnoreProperties({"tickets", "commentaires", "notifications"})
     private User agent;
     
     @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnoreProperties({"ticket", "auteur"})
     private Set<Commentaire> commentaires = new HashSet<>();
     
     @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnoreProperties({"ticket", "destinataire"})
     private Set<Notification> notifications = new HashSet<>();
     
     // Constructeurs

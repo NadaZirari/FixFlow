@@ -3,6 +3,7 @@ package com.fixflow.backend.entity;
 import com.fixflow.backend.enums.Role;
 import com.fixflow.backend.enums.TypeAbonnement;
 import com.fixflow.backend.enums.StatutTicket;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -40,7 +41,6 @@ public class User implements UserDetails {
     private String email;
     
     @NotBlank(message = "Le mot de passe est obligatoire")
-    @Size(min = 6, message = "Le mot de passe doit contenir au moins 6 caractères")
     @Column(name = "mot_de_passe", nullable = false)
     private String motDePasse;
     
@@ -67,12 +67,15 @@ public class User implements UserDetails {
     private Abonnement abonnement;
     
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnoreProperties("user")
     private Set<Ticket> tickets = new HashSet<>();
     
     @OneToMany(mappedBy = "auteur", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnoreProperties({"auteur", "ticket"})
     private Set<Commentaire> commentaires = new HashSet<>();
     
     @OneToMany(mappedBy = "destinataire", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnoreProperties({"destinataire", "ticket"})
     private Set<Notification> notifications = new HashSet<>();
     
     // Constructeurs
