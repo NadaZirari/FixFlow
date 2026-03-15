@@ -1,29 +1,30 @@
-<section class="hero">
-  <div class="hero-bg">
-    <div class="orb orb-1"></div>
-    <div class="orb orb-2"></div>
-    <div class="orb orb-3"></div>
-    <div class="grid-overlay"></div>
+<section class="min-h-screen flex flex-col lg:flex-row items-center justify-between pt-[140px] pb-20 px-4 sm:px-8 max-w-7xl mx-auto relative gap-16">
+  <!-- Animated Background Elements -->
+  <div class="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
+    <div class="absolute w-[600px] h-[600px] rounded-full bg-primary/25 blur-[80px] -top-[100px] -left-[100px] animate-pulse"></div>
+    <div class="absolute w-[400px] h-[400px] rounded-full bg-secondary/25 blur-[80px] -bottom-[50px] right-[10%] animate-pulse delay-1000"></div>
+    <div class="absolute w-[300px] h-[300px] rounded-full bg-accent/25 blur-[80px] top-[40%] left-[50%] animate-pulse delay-2000"></div>
+    <div class="absolute inset-0 bg-[linear-gradient(rgba(139,92,246,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(139,92,246,0.04)_1px,transparent_1px)] bg-[size:60px_60px]"></div>
   </div>
 
-  <div class="hero-content">
-    <div class="hero-badge">
-      <span class="badge-dot"></span>
+  <div class="flex-1 max-w-2xl z-10 text-center lg:text-left">
+    <div class="inline-flex items-center gap-2 bg-primary/10 border border-primary/30 text-primary-light px-4 py-1.5 rounded-full text-xs font-medium mb-8 tracking-wider uppercase">
+      <span class="w-2 h-2 bg-primary rounded-full animate-ping"></span>
       Plateforme de support nouvelle génération
     </div>
 
-    <h1 class="hero-title">
+    <h1 class="text-5xl lg:text-7xl font-extrabold leading-[1.1] text-white mb-6 tracking-tight">
       Résolvez vos problèmes<br>
       <span class="gradient-text">plus rapidement</span><br>
       que jamais
     </h1>
 
-    <p class="hero-subtitle">
+    <p class="text-lg lg:text-xl text-white/60 leading-relaxed mb-10 max-w-lg mx-auto lg:mx-0">
       FixFlow centralise votre support client avec un système de tickets intelligent,
       des agents dédiés et des notifications en temps réel.
     </p>
 
-    <div class="hero-cta">
+    <div class="flex flex-wrap gap-4 mb-12 justify-center lg:justify-start">
       <a routerLink="/register" class="btn-primary">
         <span>Créer un compte gratuit</span>
         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" width="18" height="18">
@@ -33,40 +34,45 @@
       <a routerLink="/login" class="btn-secondary">Se connecter</a>
     </div>
 
-    <div class="hero-stats">
-      <div class="stat-item" *ngFor="let stat of stats">
-        <span class="stat-value">{{ stat.value }}</span>
-        <span class="stat-label">{{ stat.label }}</span>
+    <div class="flex flex-wrap gap-10 justify-center lg:justify-start">
+      <div class="flex flex-col gap-1" *ngFor="let stat of stats">
+        <span class="text-3xl font-black bg-gradient-to-br from-primary to-secondary bg-clip-text text-transparent">{{ stat.value }}</span>
+        <span class="text-[0.7rem] text-white/50 uppercase tracking-[2px] font-bold">{{ stat.label }}</span>
       </div>
     </div>
   </div>
 
-  <div class="hero-visual">
-    <div class="ticket-preview">
-      <div class="ticket-header">
-        <div class="ticket-dot red"></div>
-        <div class="ticket-dot yellow"></div>
-        <div class="ticket-dot green"></div>
-        <span>FixFlow — Ticket #1042</span>
+  <!-- Hero Visual: Ticket Preview -->
+  <div class="flex-1 max-w-lg z-10 w-full">
+    <div class="bg-white/5 border border-primary/20 rounded-3xl overflow-hidden backdrop-blur-md shadow-2xl shadow-primary/10 animate-float">
+      <div class="flex items-center gap-2 px-5 py-4 bg-white/[0.03] border-b border-white/[0.06] text-[0.7rem] text-white/40">
+        <div class="w-3 h-3 rounded-full bg-red-500"></div>
+        <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+        <div class="w-3 h-3 rounded-full bg-green-500"></div>
+        <span class="ml-2 font-medium">FixFlow — Ticket #1042</span>
       </div>
-      <div class="ticket-body">
-        <div class="ticket-chip open">🟢 OUVERT</div>
-        <h3>Problème de connexion VPN</h3>
-        <p>Le VPN ne se connecte plus depuis la mise à jour. Besoin d'une assistance urgente.</p>
-        <div class="ticket-meta">
-          <span class="priority high">🔴 HAUTE</span>
-          <span class="category">TECHNIQUE</span>
+      <div class="p-6 flex flex-col gap-4">
+        <div class="inline-flex px-3 py-1 rounded-full text-[0.7rem] font-bold bg-green-500/20 text-green-500 border border-green-500/30 w-fit">
+          🟢 OUVERT
         </div>
-        <div class="ticket-agent">
-          <div class="agent-avatar">A</div>
+        <h3 class="text-xl font-bold text-white">Problème de connexion VPN</h3>
+        <p class="text-sm text-white/50 leading-relaxed">
+          Le VPN ne se connecte plus depuis la mise à jour. Besoin d'une assistance urgente.
+        </p>
+        <div class="flex gap-2">
+          <span class="px-2.5 py-1 rounded-md text-[0.65rem] font-bold bg-red-500/20 text-red-500 border border-red-500/30">🔴 HAUTE</span>
+          <span class="px-2.5 py-1 rounded-md text-[0.65rem] font-bold bg-primary/20 text-primary-light border border-primary/30">TECHNIQUE</span>
+        </div>
+        <div class="flex items-center gap-3 p-3 bg-primary/10 border border-primary/20 rounded-xl">
+          <div class="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center font-bold text-white text-sm">A</div>
           <div>
-            <div class="agent-name">Agent: Alice M.</div>
-            <div class="agent-status">En cours de traitement...</div>
+            <div class="text-xs font-bold text-white/90">Agent: Alice M.</div>
+            <div class="text-[0.65rem] text-white/40 text-left">En cours de traitement...</div>
           </div>
         </div>
-        <div class="ticket-comment">
-          <div class="comment-avatar">A</div>
-          <div class="comment-bubble">
+        <div class="flex items-start gap-3 mt-2">
+          <div class="w-8 h-8 rounded-full bg-gradient-to-br from-secondary to-green-500 flex items-center justify-center font-bold text-white text-xs shrink-0">A</div>
+          <div class="bg-secondary/10 border border-secondary/20 rounded-2xl rounded-tl-none p-3.5 text-[0.8rem] text-white/70 leading-relaxed text-left">
             Bonjour ! J'ai analysé le problème, un correctif est en cours de déploiement. ✅
           </div>
         </div>
@@ -75,40 +81,42 @@
   </div>
 </section>
 
-<section class="features-section">
-  <div class="section-container">
-    <div class="section-header">
-      <h2>Tout ce dont vous avez besoin</h2>
-      <p>Une suite complète d'outils pour gérer votre support efficacement</p>
+<!-- Features Grid -->
+<section class="py-24 border-t border-white/5">
+  <div class="max-w-7xl mx-auto px-4 sm:px-8">
+    <div class="text-center mb-16">
+      <h2 class="text-4xl font-black text-white mb-4 tracking-tight">Tout ce dont vous avez besoin</h2>
+      <p class="text-lg text-white/50 max-w-2xl mx-auto">Une suite complète d'outils pour gérer votre support efficacement</p>
     </div>
 
-    <div class="features-grid">
-      <div class="feature-card" *ngFor="let f of features">
-        <div class="feature-icon">{{ f.icon }}</div>
-        <h3>{{ f.title }}</h3>
-        <p>{{ f.desc }}</p>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div class="bg-white/[0.03] border border-white/[0.08] rounded-3xl p-8 transition-all hover:-translate-y-2 hover:border-primary/30 hover:bg-primary/5 group" *ngFor="let f of features">
+        <div class="text-4xl mb-6 group-hover:scale-110 transition-transform origin-left">{{ f.icon }}</div>
+        <h3 class="text-xl font-bold text-white mb-3">{{ f.title }}</h3>
+        <p class="text-sm text-white/50 leading-relaxed">{{ f.desc }}</p>
       </div>
     </div>
   </div>
 </section>
 
-<section class="cta-section">
-  <div class="cta-container">
-    <div class="cta-orb"></div>
-    <h2>Prêt à transformer votre support ?</h2>
-    <p>Rejoignez des milliers d'équipes qui font confiance à FixFlow</p>
-    <a routerLink="/register" class="btn-primary large">
+<!-- CTA Section -->
+<section class="py-24 text-center relative overflow-hidden">
+  <div class="max-w-3xl mx-auto px-4 sm:px-8 relative z-10">
+    <div class="absolute inset-0 bg-primary/20 blur-[120px] rounded-full -z-10 -translate-y-1/2"></div>
+    <h2 class="text-4xl lg:text-5xl font-black text-white mb-6">Prêt à transformer votre support ?</h2>
+    <p class="text-xl text-white/50 mb-10">Rejoignez des milliers d'équipes qui font confiance à FixFlow</p>
+    <a routerLink="/register" class="btn-primary !px-12 !py-5 !text-lg">
       Commencer maintenant — c'est gratuit
     </a>
   </div>
 </section>
 
-<footer class="footer">
-  <div class="footer-container">
-    <div class="footer-brand">
-      <span class="brand-icon">⚡</span>
-      <span>Fix<span>Flow</span></span>
+<footer class="py-12 border-t border-white/5">
+  <div class="max-w-7xl mx-auto px-8 flex flex-col md:flex-row items-center justify-between gap-6">
+    <div class="flex items-center gap-2 text-xl font-black text-white">
+      <span class="drop-shadow-[0_0_6px_#8b5cf6]">⚡</span>
+      <span>Fix<span class="bg-gradient-to-br from-primary to-secondary bg-clip-text text-transparent">Flow</span></span>
     </div>
-    <p>© 2026 FixFlow. Tous droits réservés.</p>
+    <p class="text-white/30 text-[0.85rem]">© 2026 FixFlow. Tous droits réservés.</p>
   </div>
 </footer>

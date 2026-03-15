@@ -1,0 +1,83 @@
+import { Component, OnInit } from '@angular/core';
+import { AsyncPipe, NgIf, NgFor, DatePipe } from '@angular/common';
+import { RouterLink } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
+import { TicketService } from '../../services/ticket.service';
+import { Ticket } from '../../models/ticket.model';
+import { Observable } from 'rxjs';
+
+@Component({
+  selector: 'app-dashboard',
+  standalone: true,
+  imports: [AsyncPipe, NgIf, NgFor, DatePipe, RouterLink],
+  template: `
+    <div class="pt-24 pb-12 px-4 sm:px-8 max-w-7xl mx-auto min-h-screen">
+      <header class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
+        <div>
+          <h1 class="text-3xl font-black text-white mb-2">Tableau de bord</h1>
+          <p class="text-white/50">Bienvenue, {{ (authService.currentUser$ | async)?.nom }} 👋</p>
+        </div>
+        <a routerLink="/tickets/new" class="btn-primary !py-3">
+          <span>Ouvrir un ticket</span>
+        </a>
+      </header>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+        <div class="bg-white/5 border border-white/10 p-6 rounded-3xl">
+          <span class="text-xs font-bold text-white/30 uppercase tracking-widest mb-1 block">Tickets Ouverts</span>
+          <span class="text-4xl font-black text-white">3</span>
+        </div>
+        <div class="bg-white/5 border border-white/10 p-6 rounded-3xl">
+          <span class="text-xs font-bold text-white/30 uppercase tracking-widest mb-1 block">En cours</span>
+          <span class="text-4xl font-black text-secondary">2</span>
+        </div>
+        <div class="bg-white/5 border border-white/10 p-6 rounded-3xl">
+          <span class="text-xs font-bold text-white/30 uppercase tracking-widest mb-1 block">Résolus</span>
+          <span class="text-4xl font-black text-green-500">12</span>
+        </div>
+      </div>
+
+      <section>
+        <div class="flex items-center justify-between mb-6">
+          <h2 class="text-xl font-bold text-white">Activités récentes</h2>
+          <a routerLink="/tickets" class="text-primary-light text-sm font-semibold hover:underline">Voir tout</a>
+        </div>
+        
+        <div class="bg-white/5 border border-white/10 rounded-3xl overflow-hidden backdrop-blur-md">
+          <div *ngIf="tickets$ | async as tickets; else loading" class="divide-y divide-white/5">
+            <div *ngFor="let t of tickets.slice(0, 5)" class="p-6 flex items-center justify-between hover:bg-white/[0.02] transition-colors">
+              <div class="flex flex-col gap-1">
+                <span class="text-white font-bold">{{ t.titre }}</span>
+                <span class="text-xs text-white/30">{{ t.dateCreation | date:'medium' }} • {{ t.categorie }}</span>
+              </div>
+              <div class="flex items-center gap-4">
+                <span class="px-3 py-1 rounded-full text-[0.65rem] font-bold border" 
+                  [class.bg-green-500/20]="t.statut === 'RESOLU'" [class.text-green-500]="t.statut === 'RESOLU'" [class.border-green-500/30]="t.statut === 'RESOLU'"
+                  [class.bg-primary/20]="t.statut === 'OUVERT'" [class.text-primary-light]="t.statut === 'OUVERT'" [class.border-primary/30]="t.statut === 'OUVERT'">
+                  {{ t.statut }}
+                </span>
+                <a [routerLink]="['/tickets', t.id]" class="text-white/20 hover:text-white transition-colors">
+                  <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                </a>
+              </div>
+            </div>
+            <div *ngIf="tickets.length === 0" class="p-12 text-center text-white/30 text-sm">
+              Vous n'avez pas encore de tickets.
+            </div>
+          </div>
+          <ng-template #loading>
+            <div class="p-12 text-center"><div class="inline-block w-8 h-8 border-4 border-primary/30 border-t-primary rounded-full animate-spin"></div></div>
+          </ng-template>
+        </div>
+      </section>
+    </div>
+  `,
+  styles: []
+})
+export class DashboardComponent implements OnInit {
+  tickets$?: Observable<Ticket[]>;
+  constructor(public authService: AuthService, private ticketService: TicketService) {}
+  ngOnInit() {
+    this.tickets$ = this.ticketService.getMyTickets();
+  }
+}
