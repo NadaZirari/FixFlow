@@ -34,17 +34,11 @@ public class TicketService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
 
-        if (!user.peutCreerTicket()) {
-            throw new RuntimeException("Limite de tickets atteinte. Veuillez vous abonner pour en créer plus.");
-        }
-
         Ticket ticket = new Ticket(request.getTitre(), request.getDescription(), user);
         ticket.setPriorite(request.getPriorite());
         ticket.setCategorie(request.getCategorie());
         
         Ticket savedTicket = ticketRepository.save(ticket);
-        user.incrementerNombreTickets();
-        userRepository.save(user);
 
         // Notification de création
         notificationService.createNotification(

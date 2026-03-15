@@ -2,7 +2,6 @@ package com.fixflow.backend.controller;
 
 import com.fixflow.backend.entity.User;
 import com.fixflow.backend.enums.Role;
-import com.fixflow.backend.enums.TypeAbonnement;
 import com.fixflow.backend.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -69,27 +68,6 @@ public class UserController {
     public ResponseEntity<List<User>> getActiveAgents() {
         List<User> agents = userService.findActiveAgents();
         return ResponseEntity.ok(agents);
-    }
-    
-    @GetMapping("/subscription/{type}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<User>> getUsersBySubscription(@PathVariable TypeAbonnement type) {
-        List<User> users = userService.findByTypeAbonnement(type);
-        return ResponseEntity.ok(users);
-    }
-    
-    @PostMapping("/{id}/upgrade-premium")
-    @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.id")
-    public ResponseEntity<Void> upgradeToPremium(@PathVariable Long id) {
-        userService.upgradeToPremium(id);
-        return ResponseEntity.ok().build();
-    }
-    
-    @PostMapping("/{id}/downgrade-free")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> downgradeToFree(@PathVariable Long id) {
-        userService.downgradeToFree(id);
-        return ResponseEntity.ok().build();
     }
     
     @GetMapping("/check-email/{email}")

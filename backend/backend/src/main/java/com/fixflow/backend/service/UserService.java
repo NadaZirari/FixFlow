@@ -2,7 +2,6 @@ package com.fixflow.backend.service;
 
 import com.fixflow.backend.entity.User;
 import com.fixflow.backend.enums.Role;
-import com.fixflow.backend.enums.TypeAbonnement;
 import com.fixflow.backend.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -53,7 +52,6 @@ public class UserService {
         user.setNom(userDetails.getNom());
         user.setEmail(userDetails.getEmail());
         user.setRole(userDetails.getRole());
-        user.setTypeAbonnement(userDetails.getTypeAbonnement());
         user.setEstActif(userDetails.getEstActif());
         
         if (userDetails.getMotDePasse() != null && !userDetails.getMotDePasse().isEmpty()) {
@@ -76,23 +74,7 @@ public class UserService {
         return userRepository.findActiveAgents(Role.SUPPORT);
     }
     
-    public List<User> findByTypeAbonnement(TypeAbonnement typeAbonnement) {
-        return userRepository.findByTypeAbonnement(typeAbonnement);
-    }
-    
     public boolean existsByEmail(String email) {
         return userRepository.existsByEmail(email);
-    }
-    
-    public void upgradeToPremium(Long userId) {
-        User user = findById(userId);
-        user.setTypeAbonnement(TypeAbonnement.PREMIUM);
-        userRepository.save(user);
-    }
-    
-    public void downgradeToFree(Long userId) {
-        User user = findById(userId);
-        user.setTypeAbonnement(TypeAbonnement.GRATUIT);
-        userRepository.save(user);
     }
 }

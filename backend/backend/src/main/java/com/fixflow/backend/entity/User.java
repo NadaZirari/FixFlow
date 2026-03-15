@@ -1,8 +1,6 @@
 package com.fixflow.backend.entity;
 
 import com.fixflow.backend.enums.Role;
-import com.fixflow.backend.enums.TypeAbonnement;
-import com.fixflow.backend.enums.StatutTicket;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
@@ -48,23 +46,12 @@ public class User implements UserDetails {
     @Column(name = "role", nullable = false)
     private Role role = Role.USER;
     
-    @Enumerated(EnumType.STRING)
-    @Column(name = "type_abonnement", nullable = false)
-    private TypeAbonnement typeAbonnement = TypeAbonnement.GRATUIT;
-    
-    @Column(name = "nombre_tickets", nullable = false)
-    private Integer nombreTickets = 0;
-    
     @CreatedDate
     @Column(name = "date_creation", nullable = false, updatable = false)
     private LocalDateTime dateCreation;
     
     @Column(name = "est_actif", nullable = false)
     private Boolean estActif = true;
-    
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "abonnement_id")
-    private Abonnement abonnement;
     
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnoreProperties("user")
@@ -140,20 +127,11 @@ public class User implements UserDetails {
     public Role getRole() { return role; }
     public void setRole(Role role) { this.role = role; }
     
-    public TypeAbonnement getTypeAbonnement() { return typeAbonnement; }
-    public void setTypeAbonnement(TypeAbonnement typeAbonnement) { this.typeAbonnement = typeAbonnement; }
-    
-    public Integer getNombreTickets() { return nombreTickets; }
-    public void setNombreTickets(Integer nombreTickets) { this.nombreTickets = nombreTickets; }
-    
     public LocalDateTime getDateCreation() { return dateCreation; }
     public void setDateCreation(LocalDateTime dateCreation) { this.dateCreation = dateCreation; }
     
     public Boolean getEstActif() { return estActif; }
     public void setEstActif(Boolean estActif) { this.estActif = estActif; }
-    
-    public Abonnement getAbonnement() { return abonnement; }
-    public void setAbonnement(Abonnement abonnement) { this.abonnement = abonnement; }
     
     public Set<Ticket> getTickets() { return tickets; }
     public void setTickets(Set<Ticket> tickets) { this.tickets = tickets; }
@@ -164,17 +142,4 @@ public class User implements UserDetails {
     public Set<Notification> getNotifications() { return notifications; }
     public void setNotifications(Set<Notification> notifications) { this.notifications = notifications; }
     
-    // Méthodes métier
-    public boolean peutCreerTicket() {
-        if (typeAbonnement == TypeAbonnement.PREMIUM) {
-            return true;
-        }
-        return tickets.stream()
-                .filter(t -> t.getStatut() != StatutTicket.ARCHIVE)
-                .count() < 3;
-    }
-    
-    public void incrementerNombreTickets() {
-        this.nombreTickets++;
-    }
 }
