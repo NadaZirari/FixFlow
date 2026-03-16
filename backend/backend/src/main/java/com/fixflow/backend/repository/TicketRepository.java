@@ -4,7 +4,7 @@ import com.fixflow.backend.entity.Ticket;
 import com.fixflow.backend.entity.User;
 import com.fixflow.backend.enums.StatutTicket;
 import com.fixflow.backend.enums.PrioriteTicket;
-import com.fixflow.backend.enums.CategorieTicket;
+import com.fixflow.backend.entity.Categorie;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -22,7 +22,7 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
     
     List<Ticket> findByPriorite(PrioriteTicket priorite);
     
-    List<Ticket> findByCategorie(CategorieTicket categorie);
+    List<Ticket> findByCategorie(Categorie categorie);
     
     List<Ticket> findByStatutNot(StatutTicket statut);
     

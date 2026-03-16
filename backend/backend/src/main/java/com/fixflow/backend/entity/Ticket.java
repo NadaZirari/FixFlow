@@ -2,7 +2,7 @@ package com.fixflow.backend.entity;
 
 import com.fixflow.backend.enums.StatutTicket;
 import com.fixflow.backend.enums.PrioriteTicket;
-import com.fixflow.backend.enums.CategorieTicket;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -41,9 +41,10 @@ public class Ticket {
     @Column(name = "priorite", nullable = false)
     private PrioriteTicket priorite = PrioriteTicket.MOYENNE;
     
-    @Enumerated(EnumType.STRING)
-    @Column(name = "categorie")
-    private CategorieTicket categorie;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "categorie_id")
+    @JsonIgnoreProperties("tickets")
+    private Categorie categorie;
     
     @Column(name = "chemin_fichier")
     private String cheminFichier;
@@ -93,8 +94,8 @@ public class Ticket {
     public PrioriteTicket getPriorite() { return priorite; }
     public void setPriorite(PrioriteTicket priorite) { this.priorite = priorite; }
     
-    public CategorieTicket getCategorie() { return categorie; }
-    public void setCategorie(CategorieTicket categorie) { this.categorie = categorie; }
+    public Categorie getCategorie() { return categorie; }
+    public void setCategorie(Categorie categorie) { this.categorie = categorie; }
     
     public String getCheminFichier() { return cheminFichier; }
     public void setCheminFichier(String cheminFichier) { this.cheminFichier = cheminFichier; }

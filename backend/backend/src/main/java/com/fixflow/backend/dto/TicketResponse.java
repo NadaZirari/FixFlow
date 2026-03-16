@@ -2,7 +2,7 @@ package com.fixflow.backend.dto;
 
 import com.fixflow.backend.enums.StatutTicket;
 import com.fixflow.backend.enums.PrioriteTicket;
-import com.fixflow.backend.enums.CategorieTicket;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,7 +20,8 @@ public class TicketResponse {
     private String description;
     private StatutTicket statut;
     private PrioriteTicket priorite;
-    private CategorieTicket categorie;
+    private String categorieNom;
+    private Long categorieId;
     private String cheminFichier;
     private LocalDateTime dateCreation;
     private String userNom;
