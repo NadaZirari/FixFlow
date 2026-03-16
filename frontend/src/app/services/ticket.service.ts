@@ -2,10 +2,11 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Ticket, TicketRequest } from '../models/ticket.model';
+import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class TicketService {
-  private readonly API = 'http://localhost:8080/api/v1/tickets';
+  private readonly API = `${environment.apiUrl}/tickets`;
 
   constructor(private http: HttpClient) {}
 

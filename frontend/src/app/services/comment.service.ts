@@ -2,10 +2,11 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Comment, CommentRequest } from '../models/comment.model';
+import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class CommentService {
-  private readonly API = 'http://localhost:8080/api/v1/commentaires';
+  private readonly API = `${environment.apiUrl}/commentaires`;
 
   constructor(private http: HttpClient) {}
 

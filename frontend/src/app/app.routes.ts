@@ -32,6 +32,11 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/tickets/ticket-form/ticket-form.component').then(m => m.TicketFormComponent)
   },
   {
+    path: 'tickets/:id',
+    canActivate: [authGuard],
+    loadComponent: () => import('./pages/tickets/ticket-detail/ticket-detail.component').then(m => m.TicketDetailComponent)
+  },
+  {
     path: 'admin',
     canActivate: [authGuard, adminGuard],
     loadComponent: () => import('./pages/admin/admin.component').then(m => m.AdminComponent)
