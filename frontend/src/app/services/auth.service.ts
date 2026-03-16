@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, tap } from 'rxjs';
+import { BehaviorSubject, Observable, map, tap } from 'rxjs';
 import { Router } from '@angular/router';
 import { AuthRequest, AuthResponse, RegisterRequest, User } from '../models/user.model';
 import { environment } from '../../environments/environment';
@@ -10,6 +10,8 @@ export class AuthService {
   private readonly API = `${environment.apiUrl}/auth`;
   private currentUserSubject = new BehaviorSubject<User | null>(this.loadUser());
   currentUser$ = this.currentUserSubject.asObservable();
+  isAdmin$ = this.currentUser$.pipe(map(user => user?.role === 'ADMIN'));
+  isAgent$ = this.currentUser$.pipe(map(user => user?.role === 'SUPPORT' || user?.role === 'ADMIN'));
 
   constructor(private http: HttpClient, private router: Router) {}
 

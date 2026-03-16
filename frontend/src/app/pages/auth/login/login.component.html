@@ -1,60 +1,60 @@
-<div class="min-h-screen flex items-center justify-center px-4 relative overflow-hidden">
+<div class="min-h-screen flex items-center justify-center px-4 relative overflow-hidden bg-slate-50">
   <!-- Bg effects -->
   <div class="absolute inset-0 -z-10">
-    <div class="absolute top-1/4 left-1/4 w-[400px] h-[400px] bg-primary/20 blur-[100px] rounded-full animate-pulse"></div>
-    <div class="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-secondary/20 blur-[100px] rounded-full animate-pulse delay-1000"></div>
+    <div class="absolute top-[10%] left-[10%] w-[500px] h-[500px] bg-indigo-500/10 blur-[120px] rounded-full animate-pulse"></div>
+    <div class="absolute bottom-[10%] right-[10%] w-[500px] h-[500px] bg-cyan-500/10 blur-[120px] rounded-full animate-pulse delay-1000"></div>
   </div>
 
   <div class="max-w-md w-full">
-    <div class="bg-white/5 border border-white/10 backdrop-blur-2xl rounded-[2.5rem] p-10 sm:p-12 shadow-2xl relative">
+    <div class="bg-white border border-slate-200 rounded-[2.5rem] p-10 sm:p-12 shadow-2xl shadow-indigo-100 relative">
       <div class="mb-10 text-center">
-        <div class="flex items-center justify-center gap-2 text-2xl font-black text-white mb-6">
-          <span class="drop-shadow-[0_0_8px_#8b5cf6]">⚡</span>
-          <span>Fix<span class="bg-gradient-to-br from-primary to-secondary bg-clip-text text-transparent">Flow</span></span>
+        <div class="flex items-center justify-center gap-2 text-2xl font-bold text-slate-900 mb-6">
+          <span>⚡</span>
+          <span>Fix<span class="gradient-text">Flow</span></span>
         </div>
-        <h1 class="text-3xl font-bold text-white mb-2">Bon retour</h1>
-        <p class="text-white/50 text-sm">Accédez à votre espace de support</p>
+        <h1 class="text-3xl font-black text-slate-900 mb-2">Bon retour</h1>
+        <p class="text-slate-500 text-sm">Accédez à votre espace de support</p>
       </div>
 
-      <div *ngIf="error" class="mb-6 p-4 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-500 text-sm font-medium animate-in fade-in slide-in-from-top-2">
+      <div *ngIf="error" class="mb-8 p-4 rounded-2xl bg-rose-50 border border-rose-100 text-rose-600 text-sm font-bold text-center animate-in fade-in slide-in-from-top-2">
         {{ error }}
       </div>
 
       <form [formGroup]="form" (ngSubmit)="onSubmit()" class="flex flex-col gap-6">
         <div class="flex flex-col gap-2">
-          <label class="text-xs font-bold text-white/40 uppercase tracking-widest ml-1">Email</label>
+          <label class="text-xs font-bold text-slate-400 uppercase tracking-widest ml-1">Email</label>
           <input type="email" formControlName="email" placeholder="vous@exemple.com" 
-            class="bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder:text-white/20 outline-none transition-all focus:border-primary/50 focus:bg-white/[0.08]">
-          <span class="text-[0.7rem] text-red-400 font-medium ml-1" *ngIf="form.get('email')?.invalid && form.get('email')?.touched">
+            class="bg-slate-50 border border-slate-100 rounded-2xl px-6 py-4 text-slate-800 placeholder:text-slate-400 outline-none transition-all focus:border-indigo-300 focus:bg-white shadow-inner">
+          <span class="text-[0.7rem] text-rose-500 font-bold ml-1" *ngIf="form.get('email')?.invalid && form.get('email')?.touched">
             Email invalide
           </span>
         </div>
 
         <div class="flex flex-col gap-2">
-          <label class="text-xs font-bold text-white/40 uppercase tracking-widest ml-1">Mot de passe</label>
+          <label class="text-xs font-bold text-slate-400 uppercase tracking-widest ml-1">Mot de passe</label>
           <div class="relative">
             <input [type]="showPassword ? 'text' : 'password'" formControlName="motDePasse" placeholder="••••••••" 
-              class="bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder:text-white/20 outline-none transition-all w-full focus:border-primary/50 focus:bg-white/[0.08]">
-            <button type="button" (click)="showPassword = !showPassword" class="absolute right-5 top-1/2 -translate-y-1/2 text-white/30 hover:text-white transition-colors">
+              class="bg-slate-50 border border-slate-100 rounded-2xl px-6 py-4 text-slate-800 placeholder:text-slate-400 outline-none transition-all w-full focus:border-indigo-300 focus:bg-white shadow-inner">
+            <button type="button" (click)="showPassword = !showPassword" class="absolute right-6 top-1/2 -translate-y-1/2 text-slate-300 hover:text-slate-900 transition-colors">
               {{ showPassword ? '🙈' : '👁️' }}
             </button>
           </div>
-          <span class="text-[0.7rem] text-red-400 font-medium ml-1" *ngIf="form.get('motDePasse')?.invalid && form.get('motDePasse')?.touched">
+          <span class="text-[0.7rem] text-rose-500 font-bold ml-1" *ngIf="form.get('motDePasse')?.invalid && form.get('motDePasse')?.touched">
             Minimum 6 caractères
           </span>
         </div>
 
-        <button type="submit" class="btn-primary !py-4 mt-2 justify-center" [disabled]="loading || form.invalid">
+        <button type="submit" class="btn-primary !py-4 mt-2 justify-center shadow-indigo-100" [disabled]="loading || form.invalid">
           <span *ngIf="!loading">Se connecter</span>
           <div *ngIf="loading" class="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
         </button>
       </form>
 
-      <div class="mt-8 flex flex-col gap-3 text-center">
-        <p class="text-sm text-white/40">
-          Pas encore de compte ? <a routerLink="/register" class="text-primary-light font-bold hover:underline">Créer un compte</a>
+      <div class="mt-10 flex flex-col gap-4 text-center">
+        <p class="text-sm text-slate-500">
+          Pas encore de compte ? <a routerLink="/register" class="text-indigo-600 font-black hover:underline">Créer un compte</a>
         </p>
-        <a routerLink="/" class="text-sm text-white/20 hover:text-white transition-colors font-medium">← Retour à l'accueil</a>
+        <a routerLink="/" class="text-xs text-slate-300 hover:text-slate-900 transition-colors font-bold uppercase tracking-widest">← Retour à l'accueil</a>
       </div>
     </div>
   </div>

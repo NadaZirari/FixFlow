@@ -8,7 +8,9 @@ import { NavbarComponent } from './components/navbar/navbar.component';
   imports: [RouterOutlet, NavbarComponent],
   template: `
     <app-navbar></app-navbar>
-    <router-outlet></router-outlet>
+    <main class="layout-container">
+      <router-outlet></router-outlet>
+    </main>
   `,
   styles: [`
     :host {
