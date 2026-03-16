@@ -78,4 +78,6 @@ import { AuthService } from '../../services/auth.service';
   `,
   styles: []
 })
-export class ProfileComponent {}
+export class ProfileComponent {
+  constructor(public authService: AuthService) {}
+}

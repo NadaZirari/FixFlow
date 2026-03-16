@@ -17,7 +17,7 @@ import { AuthService } from '../../services/auth.service';
         </a>
 
         <div class="md-flex items-center gap-6" style="align-items: center; gap: 0.5rem;">
-          <ng-container *ngIf="authService.currentUser$ | async as user; else guestLinks">
+          <ng-container *ngIf="authService.currentUser$ | async as user; else guestOrLoading">
             <a routerLink="/dashboard" routerLinkActive="active" class="nav-link-tw">Dashboard</a>
             <a routerLink="/tickets" routerLinkActive="active" class="nav-link-tw">Mes Tickets</a>
             <a routerLink="/admin" *ngIf="authService.isAdmin$ | async" routerLinkActive="active" class="nav-link-tw">Admin</a>
@@ -32,9 +32,17 @@ import { AuthService } from '../../services/auth.service';
               </button>
             </div>
           </ng-container>
-          <ng-template #guestLinks>
-            <a routerLink="/login" class="nav-link-tw">Connexion</a>
-            <a routerLink="/register" class="btn-primary" style="padding: 0.6rem 1.5rem; font-size: 0.875rem;">Commencer</a>
+          <ng-template #guestOrLoading>
+            <ng-container *ngIf="authService.isLoggedIn; else guestLinks">
+              <div class="flex items-center gap-3 px-4 py-2 bg-slate-50 rounded-full animate-pulse border border-slate-100">
+                <div class="w-6 h-6 rounded-full bg-slate-200"></div>
+                <div class="w-16 h-2 bg-slate-200 rounded"></div>
+              </div>
+            </ng-container>
+            <ng-template #guestLinks>
+              <a routerLink="/login" class="nav-link-tw">Connexion</a>
+              <a routerLink="/register" class="btn-primary" style="padding: 0.6rem 1.5rem; font-size: 0.875rem;">Commencer</a>
+            </ng-template>
           </ng-template>
         </div>
 

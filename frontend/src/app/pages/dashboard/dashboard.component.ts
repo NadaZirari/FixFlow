@@ -15,7 +15,12 @@ import { Observable } from 'rxjs';
       <header class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
         <div>
           <h1 class="text-3xl font-black text-slate-900 mb-2">Tableau de bord</h1>
-          <p class="text-slate-500">Bienvenue, {{ (authService.currentUser$ | async)?.nom }} 👋</p>
+          <p class="text-slate-500" *ngIf="authService.currentUser$ | async as user; else loadingName">
+            Bienvenue, {{ user.nom }} 👋
+          </p>
+          <ng-template #loadingName>
+            <div class="h-5 w-48 bg-slate-100 animate-pulse rounded-lg"></div>
+          </ng-template>
         </div>
         <a routerLink="/tickets/new" class="btn-primary">
           <span>Ouvrir un ticket</span>

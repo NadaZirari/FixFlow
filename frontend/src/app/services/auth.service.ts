@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, map, tap } from 'rxjs';
+import { BehaviorSubject, Observable, catchError, map, tap, throwError } from 'rxjs';
 import { Router } from '@angular/router';
 import { AuthRequest, AuthResponse, RegisterRequest, User } from '../models/user.model';
 import { environment } from '../../environments/environment';
@@ -24,6 +24,12 @@ export class AuthService {
       tap(user => {
         localStorage.setItem('currentUser', JSON.stringify(user));
         this.currentUserSubject.next(user);
+      }),
+      catchError(err => {
+        if (err.status === 401) {
+          this.logout();
+        }
+        return throwError(() => err);
       })
     );
   }
