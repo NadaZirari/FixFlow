@@ -50,12 +50,12 @@ public class CommentaireService {
         User auteur = userService.findByEmail(email);
         Ticket ticket = ticketService.findById(ticketId);
         
-        // Vérification des droits : Seul l'auteur du ticket ou l'agent assigné peut commenter
+        // Vérification des droits : Seul l'auteur du ticket ou un ADMIN peut commenter
         boolean estAuteur = ticket.getUser().getId().equals(auteur.getId());
-        boolean estAgentAssigne = ticket.getAgent() != null && ticket.getAgent().getId().equals(auteur.getId());
+        boolean estAdmin = auteur.getRole() == com.fixflow.backend.enums.Role.ADMIN;
 
-        if (!estAuteur && !estAgentAssigne) {
-            throw new RuntimeException("Accès refusé : Seul l'auteur du ticket ou l'agent assigné peut ajouter un commentaire.");
+        if (!estAuteur && !estAdmin) {
+            throw new RuntimeException("Accès refusé : Seul l'auteur du ticket ou un administrateur peut ajouter un commentaire.");
         }
         
         Commentaire commentaire = new Commentaire();

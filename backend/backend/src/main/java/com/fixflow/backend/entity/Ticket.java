@@ -58,7 +58,7 @@ public class Ticket {
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    @JsonIgnoreProperties({"tickets", "commentaires", "notifications"})
+    @JsonIgnoreProperties({"tickets", "commentaires"})
     private User user;
     
 
@@ -66,9 +66,7 @@ public class Ticket {
     @JsonIgnoreProperties({"ticket", "auteur"})
     private Set<Commentaire> commentaires = new HashSet<>();
     
-    @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonIgnoreProperties({"ticket", "destinataire"})
-    private Set<Notification> notifications = new HashSet<>();
+
     
     // Constructeurs
     public Ticket() {}
@@ -114,8 +112,7 @@ public class Ticket {
     public Set<Commentaire> getCommentaires() { return commentaires; }
     public void setCommentaires(Set<Commentaire> commentaires) { this.commentaires = commentaires; }
     
-    public Set<Notification> getNotifications() { return notifications; }
-    public void setNotifications(Set<Notification> notifications) { this.notifications = notifications; }
+
     
     // Méthodes métier
 

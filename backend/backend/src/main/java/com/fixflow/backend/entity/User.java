@@ -61,9 +61,6 @@ public class User implements UserDetails {
     @JsonIgnoreProperties({"auteur", "ticket"})
     private Set<Commentaire> commentaires = new HashSet<>();
     
-    @OneToMany(mappedBy = "destinataire", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonIgnoreProperties({"destinataire", "ticket"})
-    private Set<Notification> notifications = new HashSet<>();
     
     // Constructeurs
     public User() {}
@@ -139,7 +136,5 @@ public class User implements UserDetails {
     public Set<Commentaire> getCommentaires() { return commentaires; }
     public void setCommentaires(Set<Commentaire> commentaires) { this.commentaires = commentaires; }
     
-    public Set<Notification> getNotifications() { return notifications; }
-    public void setNotifications(Set<Notification> notifications) { this.notifications = notifications; }
     
 }

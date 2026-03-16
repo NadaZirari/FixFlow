@@ -62,11 +62,6 @@ public class RoleService {
             roleRepository.save(userRole);
         }
         
-        if (!existsByNom("SUPPORT")) {
-            Role supportRole = new Role("SUPPORT");
-            roleRepository.save(supportRole);
-        }
-        
         if (!existsByNom("ADMIN")) {
             Role adminRole = new Role("ADMIN");
             roleRepository.save(adminRole);

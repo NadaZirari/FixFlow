@@ -18,9 +18,7 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
     
     List<Ticket> findByUser(User user);
     
-    List<Ticket> findByAgent(User agent);
-    
-    List<Ticket> findByStatut(StatutTicket statut);
+
     
     List<Ticket> findByPriorite(PrioriteTicket priorite);
     
@@ -28,10 +26,7 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
     
     List<Ticket> findByStatutNot(StatutTicket statut);
     
-    @Query("SELECT t FROM Ticket t WHERE t.statut = :statut AND t.agent IS NULL")
-    List<Ticket> findUnassignedTicketsByStatut(@Param("statut") StatutTicket statut);
-    
-    @Query("SELECT t FROM Ticket t WHERE t.user.id = :userId AND t.statut != 'ARCHIVE'")
+
     List<Ticket> findActiveTicketsByUser(@Param("userId") Long userId);
     
     @Query("SELECT COUNT(t) FROM Ticket t WHERE t.user.id = :userId AND t.statut != 'ARCHIVE'")
