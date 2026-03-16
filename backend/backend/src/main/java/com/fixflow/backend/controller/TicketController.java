@@ -18,10 +18,13 @@ public class TicketController {
 
     private final TicketService ticketService;
 
-    @PostMapping
+    @PostMapping(consumes = org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<TicketResponse> createTicket(@RequestBody TicketRequest request) {
-        return ResponseEntity.ok(ticketService.createTicket(request));
+    public ResponseEntity<TicketResponse> createTicket(
+            @RequestPart("ticket") TicketRequest request,
+            @RequestPart(value = "file", required = false) org.springframework.web.multipart.MultipartFile file
+    ) {
+        return ResponseEntity.ok(ticketService.createTicket(request, file));
     }
 
     @GetMapping("/my")

@@ -5,14 +5,24 @@ import com.fixflow.backend.dto.TicketResponse;
 import com.fixflow.backend.entity.Ticket;
 import com.fixflow.backend.entity.User;
 import com.fixflow.backend.enums.StatutTicket;
+import com.fixflow.backend.entity.Categorie;
+import com.fixflow.backend.repository.CategorieRepository;
 import com.fixflow.backend.repository.TicketRepository;
 import com.fixflow.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -21,6 +31,10 @@ public class TicketService {
 
     private final TicketRepository ticketRepository;
     private final UserRepository userRepository;
+    private final CategorieRepository categorieRepository;
+
+    @Value("${file.upload-dir:uploads}")
+    private String uploadDir;
 
     public Ticket findById(Long id) {
         return ticketRepository.findById(id)
@@ -28,18 +42,26 @@ public class TicketService {
     }
 
     @Transactional
-    public TicketResponse createTicket(TicketRequest request) {
+    public TicketResponse createTicket(TicketRequest request, MultipartFile file) {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
 
         Ticket ticket = new Ticket(request.getTitre(), request.getDescription(), user);
         ticket.setPriorite(request.getPriorite());
-        ticket.setCategorie(request.getCategorie());
+        
+        if (request.getCategorieId() != null) {
+            Categorie categorie = categorieRepository.findById(request.getCategorieId())
+                    .orElseThrow(() -> new RuntimeException("Catégorie non trouvée"));
+            ticket.setCategorie(categorie);
+        }
+
+        if (file != null && !file.isEmpty()) {
+            String fileName = storeFile(file);
+            ticket.setCheminFichier(fileName);
+        }
         
         Ticket savedTicket = ticketRepository.save(ticket);
-
-
         return mapToResponse(savedTicket);
     }
 
@@ -68,7 +90,12 @@ public class TicketService {
         ticket.setTitre(request.getTitre());
         ticket.setDescription(request.getDescription());
         ticket.setPriorite(request.getPriorite());
-        ticket.setCategorie(request.getCategorie());
+        
+        if (request.getCategorieId() != null) {
+            Categorie categorie = categorieRepository.findById(request.getCategorieId())
+                    .orElseThrow(() -> new RuntimeException("Catégorie non trouvée"));
+            ticket.setCategorie(categorie);
+        }
         
         return mapToResponse(ticketRepository.save(ticket));
     }
@@ -98,9 +125,26 @@ public class TicketService {
                 .description(ticket.getDescription())
                 .statut(ticket.getStatut())
                 .priorite(ticket.getPriorite())
+                .categorieNom(ticket.getCategorie() != null ? ticket.getCategorie().getNom() : null)
+                .categorieId(ticket.getCategorie() != null ? ticket.getCategorie().getId() : null)
                 .cheminFichier(ticket.getCheminFichier())
                 .dateCreation(ticket.getDateCreation())
                 .userNom(ticket.getUser().getNom())
                 .build();
+    }
+
+    private String storeFile(MultipartFile file) {
+        try {
+            Path path = Paths.get(uploadDir);
+            if (!Files.exists(path)) {
+                Files.createDirectories(path);
+            }
+            String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
+            Path targetLocation = path.resolve(fileName);
+            Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+            return fileName;
+        } catch (IOException ex) {
+            throw new RuntimeException("Impossible de stocker le fichier. Veuillez réessayer !", ex);
+        }
     }
 }
