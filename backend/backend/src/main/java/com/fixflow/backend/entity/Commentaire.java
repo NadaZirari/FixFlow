@@ -39,9 +39,6 @@ public class Commentaire {
     public Commentaire(String contenu, Ticket ticket, User auteur) {
         this.contenu = contenu;
         this.ticket = ticket;
-        this.auteur = auteur;
-    }
-    
     }
     
     // Getters et Setters
