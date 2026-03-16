@@ -42,6 +42,17 @@
 }
 
 @layer components {
+  .nav-link-tw {
+    @apply text-white/70 no-underline text-[0.95rem] font-medium transition-colors relative hover:text-white;
+    &::after {
+      content: '';
+      @apply absolute -bottom-1 left-0 right-0 h-[2px] bg-gradient-to-r from-primary to-secondary scale-x-0 transition-transform origin-left;
+    }
+    &:hover::after, &.active::after {
+      @apply scale-x-100;
+    }
+    &.active { @apply text-white; }
+  }
   .btn-primary {
     @apply inline-flex items-center gap-2 bg-gradient-to-br from-primary to-secondary text-white px-8 py-3.5 rounded-full font-bold text-base transition-all duration-200 shadow-[0_0_30px_rgba(139,92,246,0.3)] hover:-translate-y-0.5 hover:shadow-[0_8px_40px_rgba(139,92,246,0.5)];
   }

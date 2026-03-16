@@ -55,19 +55,7 @@ import { AuthService } from '../../services/auth.service';
       </div>
     </nav>
   `,
-  styles: [`
-    .nav-link-tw {
-      @apply text-white/70 no-underline text-[0.95rem] font-medium transition-colors relative hover:text-white;
-      &::after {
-        content: '';
-        @apply absolute -bottom-1 left-0 right-0 h-[2px] bg-gradient-to-r from-primary to-secondary scale-x-0 transition-transform origin-left;
-      }
-      &:hover::after, &.active::after {
-        @apply scale-x-100;
-      }
-      &.active { @apply text-white; }
-    }
-  `]
+  styles: []
 })
 export class NavbarComponent {
   menuOpen = false;

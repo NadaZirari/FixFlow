@@ -7,7 +7,7 @@ import { NgFor } from '@angular/common';
   standalone: true,
   imports: [RouterLink, NgFor],
   templateUrl: './home.component.html',
-  styleUrls: ['./home.component.scss']
+  styleUrls: ['./home.component.css']
 })
 export class HomeComponent {
   features = [
@@ -16,7 +16,7 @@ export class HomeComponent {
     { icon: '💬', title: 'Communication fluide', desc: 'Échangez directement avec votre agent via les commentaires intégrés à chaque ticket.' },
     { icon: '🔔', title: 'Notifications instantanées', desc: 'Soyez informé à chaque étape du traitement de vos demandes en temps réel.' },
     { icon: '📊', title: 'Tableau de bord', desc: 'Visualisez l\'état de tous vos tickets et suivez leur progression depuis un seul endroit.' },
-    { icon: '🔒', title: 'Sécurité maximale', desc: 'Vos données sont protégées par un système d'authentification JWT robuste.' },
+    { icon: '🔒', title: 'Sécurité maximale', desc: "Vos données sont protégées par un système d'authentification JWT robuste." },
   ];
 
   stats = [
