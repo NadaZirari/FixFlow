@@ -1,13 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { AsyncPipe, NgIf, NgFor } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
+import { AsyncPipe, NgIf, NgFor, CommonModule } from '@angular/common';
+import { UserService } from '../../services/user.service';
 import { User } from '../../models/user.model';
 import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-admin',
   standalone: true,
-  imports: [AsyncPipe, NgIf, NgFor],
+  imports: [CommonModule, AsyncPipe, NgIf, NgFor],
   template: `
     <div class="pt-24 pb-12 px-4 sm:px-8 max-w-7xl mx-auto min-h-screen">
       <header class="mb-12">
@@ -40,7 +40,7 @@ import { Observable } from 'rxjs';
         <div class="lg:col-span-3 bg-white/5 border border-white/10 rounded-[2rem] overflow-hidden backdrop-blur-md">
            <div class="px-8 py-6 border-b border-white/10 flex items-center justify-between">
              <h2 class="text-xl font-bold text-white">Utilisateurs récents</h2>
-             <button class="text-primary-light text-sm font-bold hover:underline">Voir tous les utilisateurs</button>
+             <button (click)="loadUsers()" class="text-primary-light text-sm font-bold hover:underline">Actualiser</button>
            </div>
            <div class="overflow-x-auto">
              <table class="w-full text-left">
@@ -53,7 +53,7 @@ import { Observable } from 'rxjs';
                  </tr>
                </thead>
                <tbody *ngIf="users$ | async as users; else loading" class="divide-y divide-white/5">
-                 <tr *ngFor="let u of users.slice(0, 10)" class="hover:bg-white/[0.02] transition-colors">
+                 <tr *ngFor="let u of users" class="hover:bg-white/[0.02] transition-colors" [class.opacity-40]="!u.estActif">
                    <td class="px-8 py-5">
                      <div class="flex items-center gap-3">
                        <div class="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center font-bold text-primary-light text-xs">{{ u.nom.charAt(0) }}</div>
@@ -69,11 +69,19 @@ import { Observable } from 'rxjs';
                      </span>
                    </td>
                    <td class="px-8 py-5 text-center">
-                     <span class="inline-flex w-2 h-2 rounded-full bg-green-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></span>
+                     <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[0.6rem] font-bold border"
+                        [class.bg-green-500/10]="u.estActif" [class.text-green-400]="u.estActif" [class.border-green-500/20]="u.estActif"
+                        [class.bg-red-500/10]="!u.estActif" [class.text-red-400]="!u.estActif" [class.border-red-500/20]="!u.estActif">
+                        <span class="w-1 h-1 rounded-full" [class.bg-green-400]="u.estActif" [class.bg-red-400]="!u.estActif"></span>
+                        {{ u.estActif ? 'ACTIF' : 'ARCHIVÉ' }}
+                     </span>
                    </td>
                    <td class="px-8 py-5 text-right">
-                     <button class="text-white/20 hover:text-white transition-colors">
-                       <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" width="18" height="18"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" /></svg>
+                     <button (click)="toggleUser(u)" 
+                        class="px-3 py-1.5 rounded-lg text-[0.65rem] font-bold transition-all border"
+                        [class.bg-red-500/10]="u.estActif" [class.text-red-400]="u.estActif" [class.border-red-500/20]="u.estActif" [class.hover:bg-red-500/20]="u.estActif"
+                        [class.bg-green-500/10]="!u.estActif" [class.text-green-400]="!u.estActif" [class.border-green-500/20]="!u.estActif" [class.hover:bg-green-500/20]="!u.estActif">
+                       {{ u.estActif ? 'Archiver' : 'Désarchiver' }}
                      </button>
                    </td>
                  </tr>
@@ -92,8 +100,19 @@ import { Observable } from 'rxjs';
 })
 export class AdminComponent implements OnInit {
   users$?: Observable<User[]>;
-  constructor(private http: HttpClient) {}
+  constructor(private userService: UserService) {}
   ngOnInit() {
-    this.users$ = this.http.get<User[]>('http://localhost:8080/api/v1/users');
+    this.loadUsers();
+  }
+  loadUsers() {
+    this.users$ = this.userService.getAllUsers();
+  }
+  toggleUser(user: User) {
+    if (user.id) {
+      this.userService.toggleStatus(user.id).subscribe({
+        next: () => this.loadUsers(),
+        error: (err: any) => console.error('Erreur', err)
+      });
+    }
   }
 }

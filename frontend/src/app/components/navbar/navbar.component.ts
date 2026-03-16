@@ -8,11 +8,11 @@ import { AuthService } from '../../services/auth.service';
   standalone: true,
   imports: [RouterLink, RouterLinkActive, AsyncPipe, NgIf],
   template: `
-    <nav class="fixed top-0 left-0 right-0 z-[1000] bg-[#0a0a14]/85 backdrop-blur-xl border-b border-primary/15 h-[70px]">
+    <nav class="fixed top-0 left-0 right-0 z-[1000] bg-bg-darker/80 backdrop-blur-xl border-b border-white/[0.05] h-[70px]">
       <div class="max-w-7xl mx-auto px-4 sm:px-8 h-full flex items-center justify-between">
-        <a routerLink="/" class="flex items-center gap-2 no-underline">
-          <span class="text-2xl drop-shadow-[0_0_8px_#8b5cf6]">⚡</span>
-          <span class="text-xl font-extrabold text-white tracking-tight">Fix<span class="bg-gradient-to-br from-primary to-secondary bg-clip-text text-transparent">Flow</span></span>
+        <a routerLink="/" class="flex items-center gap-2 no-underline group">
+          <span class="text-2xl transition-transform group-hover:scale-110">⚡</span>
+          <span class="text-xl font-bold text-white tracking-tight">Fix<span class="gradient-text">Flow</span></span>
         </a>
 
         <div class="hidden md:flex items-center gap-6">

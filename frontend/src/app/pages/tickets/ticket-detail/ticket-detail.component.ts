@@ -179,11 +179,11 @@ export class TicketDetailComponent implements OnInit {
       ticket: this.ticketService.getTicketById(id),
       comments: this.commentService.getCommentsByTicket(id)
     }).subscribe({
-      next: (res) => {
+      next: (res: { ticket: Ticket, comments: Comment[] }) => {
         this.ticket = res.ticket;
         this.comments = res.comments;
       },
-      error: (err) => console.error('Erreur chargement ticket', err)
+      error: (err: any) => console.error('Erreur chargement ticket', err)
     });
   }
 
@@ -191,12 +191,12 @@ export class TicketDetailComponent implements OnInit {
     if (!this.newComment.trim() || !this.ticket) return;
     this.sending = true;
     this.commentService.addComment(this.ticket.id, { contenu: this.newComment }).subscribe({
-      next: (comment) => {
+      next: (comment: Comment) => {
         this.comments.push(comment);
         this.newComment = '';
         this.sending = false;
       },
-      error: (err) => {
+      error: (err: any) => {
         console.error('Erreur ajout commentaire', err);
         this.sending = false;
       }
