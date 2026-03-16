@@ -113,8 +113,9 @@ public class TicketService {
                 .description(ticket.getDescription())
                 .statut(ticket.getStatut())
                 .priorite(ticket.getPriorite())
-                .categorie(ticket.getCategorie())
                 .cheminFichier(ticket.getCheminFichier())
+                .dateCreation(ticket.getDateCreation())
+                .userNom(ticket.getUser().getNom())
                 .build();
     }
 }
