@@ -24,5 +24,4 @@ public class TicketResponse {
     private String cheminFichier;
     private LocalDateTime dateCreation;
     private String userNom;
-    private String agentNom;
 }

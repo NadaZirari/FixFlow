@@ -69,11 +69,6 @@ public class UserService {
     public List<User> findByRole(Role role) {
         return userRepository.findByRole(role);
     }
-    
-    public List<User> findActiveAgents() {
-        return userRepository.findActiveAgents(Role.SUPPORT);
-    }
-    
     public boolean existsByEmail(String email) {
         return userRepository.existsByEmail(email);
     }

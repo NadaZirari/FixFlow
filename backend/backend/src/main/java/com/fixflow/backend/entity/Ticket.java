@@ -61,11 +61,7 @@ public class Ticket {
     @JsonIgnoreProperties({"tickets", "commentaires", "notifications"})
     private User user;
     
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "agent_id")
-    @JsonIgnoreProperties({"tickets", "commentaires", "notifications"})
-    private User agent;
-    
+
     @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnoreProperties({"ticket", "auteur"})
     private Set<Commentaire> commentaires = new HashSet<>();
@@ -114,9 +110,7 @@ public class Ticket {
     public User getUser() { return user; }
     public void setUser(User user) { this.user = user; }
     
-    public User getAgent() { return agent; }
-    public void setAgent(User agent) { this.agent = agent; }
-    
+
     public Set<Commentaire> getCommentaires() { return commentaires; }
     public void setCommentaires(Set<Commentaire> commentaires) { this.commentaires = commentaires; }
     
@@ -124,13 +118,7 @@ public class Ticket {
     public void setNotifications(Set<Notification> notifications) { this.notifications = notifications; }
     
     // Méthodes métier
-    public void attribuerAgent(User agent) {
-        this.agent = agent;
-        if (this.statut == StatutTicket.OUVERT) {
-            this.statut = StatutTicket.EN_COURS;
-        }
-    }
-    
+
     public void resoudre() {
         this.statut = StatutTicket.RESOLU;
         this.dateResolution = LocalDateTime.now();

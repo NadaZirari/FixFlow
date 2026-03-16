@@ -23,9 +23,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     
     List<User> findByEstActifFalse();
     
-    @Query("SELECT u FROM User u WHERE u.role = :role AND u.estActif = true")
-    List<User> findActiveAgents(@Param("role") Role role);
-    
     @Query("SELECT u FROM User u WHERE u.nom LIKE %:keyword% OR u.email LIKE %:keyword%")
     List<User> findByKeyword(@Param("keyword") String keyword);
 }

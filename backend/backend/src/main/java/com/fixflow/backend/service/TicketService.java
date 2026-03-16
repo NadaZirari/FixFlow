@@ -67,28 +67,6 @@ public class TicketService {
                 .collect(Collectors.toList());
     }
 
-    @Transactional
-    public TicketResponse assignTicket(Long ticketId) {
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        User agent = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Agent non trouvé"));
-
-        Ticket ticket = ticketRepository.findById(ticketId)
-                .orElseThrow(() -> new RuntimeException("Ticket non trouvé"));
-
-        ticket.attribuerAgent(agent);
-        Ticket savedTicket = ticketRepository.save(ticket);
-
-        // Notification à l'utilisateur
-        notificationService.createNotification(
-            com.fixflow.backend.enums.TypeNotification.TICKET_ATTRIBUE,
-            "Votre ticket '" + ticket.getTitre() + "' a été attribué à " + agent.getNom() + ".",
-            ticket.getUser().getId(),
-            savedTicket.getId()
-        );
-
-        return mapToResponse(savedTicket);
-    }
 
     @Transactional
     public TicketResponse updateTicket(Long id, TicketRequest request) {
@@ -137,9 +115,6 @@ public class TicketService {
                 .priorite(ticket.getPriorite())
                 .categorie(ticket.getCategorie())
                 .cheminFichier(ticket.getCheminFichier())
-                .dateCreation(ticket.getDateCreation())
-                .userNom(ticket.getUser().getNom())
-                .agentNom(ticket.getAgent() != null ? ticket.getAgent().getNom() : null)
                 .build();
     }
 }

@@ -31,15 +31,9 @@ public class TicketController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('SUPPORT', 'ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<TicketResponse>> getAllTickets() {
         return ResponseEntity.ok(ticketService.getAllTickets());
-    }
-
-    @PostMapping("/{id}/assign")
-    @PreAuthorize("hasRole('SUPPORT')")
-    public ResponseEntity<TicketResponse> assignTicket(@PathVariable Long id) {
-        return ResponseEntity.ok(ticketService.assignTicket(id));
     }
 
     @PutMapping("/{id}")
@@ -52,7 +46,7 @@ public class TicketController {
     }
 
     @PutMapping("/{id}/status")
-    @PreAuthorize("hasAnyRole('SUPPORT', 'ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<TicketResponse> updateStatus(
             @PathVariable Long id,
             @RequestParam StatutTicket statut

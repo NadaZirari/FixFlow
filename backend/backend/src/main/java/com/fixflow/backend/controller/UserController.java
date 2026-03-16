@@ -63,13 +63,6 @@ public class UserController {
         return ResponseEntity.ok(users);
     }
     
-    @GetMapping("/agents")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('SUPPORT')")
-    public ResponseEntity<List<User>> getActiveAgents() {
-        List<User> agents = userService.findActiveAgents();
-        return ResponseEntity.ok(agents);
-    }
-    
     @GetMapping("/check-email/{email}")
     public ResponseEntity<Boolean> checkEmailExists(@PathVariable String email) {
         boolean exists = userService.existsByEmail(email);
