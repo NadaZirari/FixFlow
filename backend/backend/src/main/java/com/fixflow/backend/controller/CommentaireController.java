@@ -58,17 +58,6 @@ public class CommentaireController {
         return ResponseEntity.ok(commentaireService.findByTicket(ticketId));
     }
     
-    @GetMapping("/ticket/{ticketId}/public")
-    @PreAuthorize("hasRole('ADMIN') or @ticketService.findById(#ticketId).user.email == authentication.principal.username")
-    public ResponseEntity<List<CommentResponse>> getPublicCommentairesByTicket(@PathVariable Long ticketId) {
-        return ResponseEntity.ok(commentaireService.findPublicCommentsByTicket(ticketId));
-    }
-    
-    @GetMapping("/ticket/{ticketId}/internal")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<CommentResponse>> getInternalCommentairesByTicket(@PathVariable Long ticketId) {
-        return ResponseEntity.ok(commentaireService.findInternalCommentsByTicket(ticketId));
-    }
     
     @GetMapping("/ticket/{ticketId}/count")
     @PreAuthorize("hasRole('ADMIN') or @ticketService.findById(#ticketId).user.email == authentication.principal.username")

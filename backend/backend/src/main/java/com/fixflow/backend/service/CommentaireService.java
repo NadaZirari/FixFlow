@@ -5,7 +5,7 @@ import com.fixflow.backend.dto.CommentResponse;
 import com.fixflow.backend.entity.Commentaire;
 import com.fixflow.backend.entity.Ticket;
 import com.fixflow.backend.entity.User;
-import com.fixflow.backend.enums.TypeCommentaire;
+
 import com.fixflow.backend.repository.CommentaireRepository;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -60,7 +60,7 @@ public class CommentaireService {
         
         Commentaire commentaire = new Commentaire();
         commentaire.setContenu(request.getContenu());
-        commentaire.setType(request.getType() != null ? request.getType() : TypeCommentaire.PUBLIC);
+
         commentaire.setTicket(ticket);
         commentaire.setAuteur(auteur);
         
@@ -70,9 +70,7 @@ public class CommentaireService {
     public CommentResponse update(Long id, CommentRequest request) {
         Commentaire commentaire = findById(id);
         commentaire.setContenu(request.getContenu());
-        if (request.getType() != null) {
-            commentaire.setType(request.getType());
-        }
+
         return mapToResponse(commentaireRepository.save(commentaire));
     }
     
@@ -88,24 +86,14 @@ public class CommentaireService {
                 .collect(Collectors.toList());
     }
     
-    public List<CommentResponse> findPublicCommentsByTicket(Long ticketId) {
-        return commentaireRepository.findPublicCommentsByTicket(ticketId).stream()
-                .map(this::mapToResponse)
-                .collect(Collectors.toList());
-    }
-    
-    public List<CommentResponse> findInternalCommentsByTicket(Long ticketId) {
-        return commentaireRepository.findInternalCommentsByTicket(ticketId).stream()
-                .map(this::mapToResponse)
-                .collect(Collectors.toList());
-    }
+
     
     public CommentResponse mapToResponse(Commentaire commentaire) {
         return CommentResponse.builder()
                 .id(commentaire.getId())
                 .contenu(commentaire.getContenu())
                 .date(commentaire.getDate())
-                .type(commentaire.getType())
+
                 .auteurNom(commentaire.getAuteur().getNom())
                 .build();
     }

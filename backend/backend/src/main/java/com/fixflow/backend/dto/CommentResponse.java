@@ -1,6 +1,5 @@
 package com.fixflow.backend.dto;
 
-import com.fixflow.backend.enums.TypeCommentaire;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,6 +15,5 @@ public class CommentResponse {
     private Long id;
     private String contenu;
     private LocalDateTime date;
-    private TypeCommentaire type;
     private String auteurNom;
 }
