@@ -68,6 +68,11 @@ h1, h2, h3, h4, h5, h6, p, span, div, a, li, td, th {
 .fixed { position: fixed !important; }
 .inset-0 { top: 0; right: 0; bottom: 0; left: 0; }
 .z-10 { z-index: 10 !important; }
+.hidden { display: none !important; }
+.md-flex { display: none !important; }
+@media (min-width: 768px) {
+  .md-flex { display: flex !important; }
+}
 
 /* Spacing & Sizing */
 .w-full { width: 100% !important; }

@@ -13,7 +13,20 @@ export class AuthService {
   isAdmin$ = this.currentUser$.pipe(map(user => user?.role === 'ADMIN'));
   isAgent$ = this.currentUser$.pipe(map(user => user?.role === 'SUPPORT' || user?.role === 'ADMIN'));
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(private http: HttpClient, private router: Router) {
+    if (this.token && !this.currentUser) {
+      this.getProfile().subscribe();
+    }
+  }
+
+  getProfile(): Observable<User> {
+    return this.http.get<User>(`${environment.apiUrl}/users/me`).pipe(
+      tap(user => {
+        localStorage.setItem('currentUser', JSON.stringify(user));
+        this.currentUserSubject.next(user);
+      })
+    );
+  }
 
   private loadUser(): User | null {
     const data = localStorage.getItem('currentUser');
