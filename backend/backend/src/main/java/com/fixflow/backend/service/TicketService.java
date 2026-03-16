@@ -41,6 +41,10 @@ public class TicketService {
                 .orElseThrow(() -> new RuntimeException("Ticket non trouvé avec l'ID: " + id));
     }
 
+    public TicketResponse getTicketResponseById(Long id) {
+        return mapToResponse(findById(id));
+    }
+
     @Transactional
     public TicketResponse createTicket(TicketRequest request, MultipartFile file) {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();

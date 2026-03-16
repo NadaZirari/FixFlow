@@ -13,6 +13,10 @@ export class TicketService {
     return this.http.get<Ticket[]>(`${this.API}/my`);
   }
 
+  getTicketById(id: number): Observable<Ticket> {
+    return this.http.get<Ticket>(`${this.API}/${id}`);
+  }
+
   getAllTickets(): Observable<Ticket[]> {
     return this.http.get<Ticket[]>(this.API);
   }

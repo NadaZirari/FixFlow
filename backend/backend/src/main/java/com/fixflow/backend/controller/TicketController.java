@@ -39,6 +39,12 @@ public class TicketController {
         return ResponseEntity.ok(ticketService.getAllTickets());
     }
 
+    @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN') or @ticketService.findById(#id).user.email == authentication.principal.username")
+    public ResponseEntity<TicketResponse> getTicketById(@PathVariable Long id) {
+        return ResponseEntity.ok(ticketService.getTicketResponseById(id));
+    }
+
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     public ResponseEntity<TicketResponse> updateTicket(

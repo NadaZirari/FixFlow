@@ -48,6 +48,13 @@ public class UserController {
         User updatedUser = userService.update(id, userDetails);
         return ResponseEntity.ok(updatedUser);
     }
+
+    @PatchMapping("/{id}/toggle-status")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<User> toggleUserStatus(@PathVariable Long id) {
+        User updatedUser = userService.toggleStatus(id);
+        return ResponseEntity.ok(updatedUser);
+    }
     
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")

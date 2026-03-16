@@ -61,6 +61,12 @@ public class UserService {
         return userRepository.save(user);
     }
     
+    public User toggleStatus(Long id) {
+        User user = findById(id);
+        user.setEstActif(!user.getEstActif());
+        return userRepository.save(user);
+    }
+    
     public void delete(Long id) {
         User user = findById(id);
         userRepository.delete(user);
