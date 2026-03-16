@@ -22,19 +22,19 @@ public class CommentaireController {
     }
     
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN') or hasRole('SUPPORT')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<CommentResponse>> getAllCommentaires() {
         return ResponseEntity.ok(commentaireService.findAll());
     }
     
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('SUPPORT')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<CommentResponse> getCommentaireById(@PathVariable Long id) {
         return ResponseEntity.ok(commentaireService.findResponseById(id));
     }
     
     @PostMapping("/ticket/{ticketId}")
-    @PreAuthorize("hasAnyRole('USER', 'SUPPORT', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<CommentResponse> addComment(@PathVariable Long ticketId, @Valid @RequestBody CommentRequest request) {
         return ResponseEntity.ok(commentaireService.create(request, ticketId));
     }
@@ -53,25 +53,25 @@ public class CommentaireController {
     }
     
     @GetMapping("/ticket/{ticketId}")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('SUPPORT') or @ticketService.findById(#ticketId).user.email == authentication.principal.username")
+    @PreAuthorize("hasRole('ADMIN') or @ticketService.findById(#ticketId).user.email == authentication.principal.username")
     public ResponseEntity<List<CommentResponse>> getCommentairesByTicket(@PathVariable Long ticketId) {
         return ResponseEntity.ok(commentaireService.findByTicket(ticketId));
     }
     
     @GetMapping("/ticket/{ticketId}/public")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('SUPPORT') or @ticketService.findById(#ticketId).user.email == authentication.principal.username")
+    @PreAuthorize("hasRole('ADMIN') or @ticketService.findById(#ticketId).user.email == authentication.principal.username")
     public ResponseEntity<List<CommentResponse>> getPublicCommentairesByTicket(@PathVariable Long ticketId) {
         return ResponseEntity.ok(commentaireService.findPublicCommentsByTicket(ticketId));
     }
     
     @GetMapping("/ticket/{ticketId}/internal")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('SUPPORT')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<CommentResponse>> getInternalCommentairesByTicket(@PathVariable Long ticketId) {
         return ResponseEntity.ok(commentaireService.findInternalCommentsByTicket(ticketId));
     }
     
     @GetMapping("/ticket/{ticketId}/count")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('SUPPORT') or @ticketService.findById(#ticketId).user.email == authentication.principal.username")
+    @PreAuthorize("hasRole('ADMIN') or @ticketService.findById(#ticketId).user.email == authentication.principal.username")
     public ResponseEntity<Long> countCommentairesByTicket(@PathVariable Long ticketId) {
         return ResponseEntity.ok(commentaireService.countByTicket(ticketId));
     }

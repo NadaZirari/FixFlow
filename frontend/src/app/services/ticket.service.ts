@@ -26,7 +26,9 @@ export class TicketService {
   }
 
   updateStatus(ticketId: number, statut: string): Observable<Ticket> {
-    return this.http.patch<Ticket>(`${this.API}/${ticketId}/statut`, { statut });
+    return this.http.put<Ticket>(`${this.API}/${ticketId}/status`, {}, {
+      params: { statut }
+    });
   }
 
   assignTicket(ticketId: number): Observable<Ticket> {

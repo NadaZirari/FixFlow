@@ -2,7 +2,6 @@ package com.fixflow.backend.enums;
 
 public enum Role {
     USER("Utilisateur"),
-    SUPPORT("Agent Support"),
     ADMIN("Administrateur");
     
     private final String displayName;
