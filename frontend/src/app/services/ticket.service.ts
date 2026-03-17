@@ -2,20 +2,20 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Ticket, TicketRequest } from '../models/ticket.model';
-import { environment } from '../../environments/environment';
+
+export interface Categorie {
+  id: number;
+  nom: string;
+}
 
 @Injectable({ providedIn: 'root' })
 export class TicketService {
-  private readonly API = `${environment.apiUrl}/tickets`;
+  private readonly API = 'http://localhost:8081/api/v1/tickets';
 
   constructor(private http: HttpClient) {}
 
   getMyTickets(): Observable<Ticket[]> {
     return this.http.get<Ticket[]>(`${this.API}/my`);
-  }
-
-  getTicketById(id: number): Observable<Ticket> {
-    return this.http.get<Ticket>(`${this.API}/${id}`);
   }
 
   getAllTickets(): Observable<Ticket[]> {
@@ -42,5 +42,9 @@ export class TicketService {
 
   deleteTicket(id: number): Observable<void> {
     return this.http.delete<void>(`${this.API}/${id}`);
+  }
+
+  getCategories(): Observable<Categorie[]> {
+    return this.http.get<Categorie[]>('http://localhost:8081/api/v1/categories');
   }
 }

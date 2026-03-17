@@ -1,38 +1,16 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, catchError, map, tap, throwError } from 'rxjs';
+import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { Router } from '@angular/router';
 import { AuthRequest, AuthResponse, RegisterRequest, User } from '../models/user.model';
-import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private readonly API = `${environment.apiUrl}/auth`;
+  private readonly API = 'http://localhost:8081/api/v1/auth';
   private currentUserSubject = new BehaviorSubject<User | null>(this.loadUser());
   currentUser$ = this.currentUserSubject.asObservable();
-  isAdmin$ = this.currentUser$.pipe(map(user => user?.role === 'ADMIN'));
-  isAgent$ = this.currentUser$.pipe(map(user => user?.role === 'SUPPORT' || user?.role === 'ADMIN'));
 
-  constructor(private http: HttpClient, private router: Router) {
-    if (this.token && !this.currentUser) {
-      this.getProfile().subscribe();
-    }
-  }
-
-  getProfile(): Observable<User> {
-    return this.http.get<User>(`${environment.apiUrl}/users/me`).pipe(
-      tap(user => {
-        localStorage.setItem('currentUser', JSON.stringify(user));
-        this.currentUserSubject.next(user);
-      }),
-      catchError(err => {
-        if (err.status === 401) {
-          this.logout();
-        }
-        return throwError(() => err);
-      })
-    );
-  }
+  constructor(private http: HttpClient, private router: Router) {}
 
   private loadUser(): User | null {
     const data = localStorage.getItem('currentUser');
@@ -60,7 +38,7 @@ export class AuthService {
   }
 
   login(req: AuthRequest): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.API}/login`, req).pipe(
+    return this.http.post<AuthResponse>(`${this.API}/authenticate`, req).pipe(
       tap(res => {
         localStorage.setItem('token', res.token);
         if (res.user) {

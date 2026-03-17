@@ -3,7 +3,8 @@ package com.fixflow.backend.enums;
 public enum PrioriteTicket {
     FAIBLE("Faible"),
     MOYENNE("Moyenne"),
-    HAUTE("Haute");
+    HAUTE("Haute"),
+    CRITIQUE("Critique");
     
     private final String displayName;
     

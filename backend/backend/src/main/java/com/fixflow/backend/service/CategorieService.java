@@ -49,13 +49,18 @@ public class CategorieService {
     }
 
     public void initializeDefaultCategories() {
+        System.out.println("Vérification de l'initialisation des catégories...");
         if (categorieRepository.count() == 0) {
+            System.out.println("Aucune catégorie trouvée, initialisation des valeurs par défaut...");
             String[] defaultCategories = {"Technique", "Compte", "Facturation", "Autre"};
             for (String nom : defaultCategories) {
                 if (!categorieRepository.existsByNom(nom)) {
                     categorieRepository.save(new Categorie(nom));
+                    System.out.println("Catégorie créée: " + nom);
                 }
             }
+        } else {
+            System.out.println("Catégories déjà présentes: " + categorieRepository.count());
         }
     }
 }

@@ -1,87 +1,79 @@
 import { Component, OnInit } from '@angular/core';
-import { AsyncPipe, NgIf, NgFor, CommonModule } from '@angular/common';
-import { UserService } from '../../services/user.service';
+import { AsyncPipe, NgIf, NgFor } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
 import { User } from '../../models/user.model';
 import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-admin',
   standalone: true,
-  imports: [CommonModule, AsyncPipe, NgIf, NgFor],
+  imports: [AsyncPipe, NgIf, NgFor],
   template: `
     <div class="pt-24 pb-12 px-4 sm:px-8 max-w-7xl mx-auto min-h-screen">
       <header class="mb-12">
-        <h1 class="text-3xl font-black text-slate-900">Administration</h1>
-        <p class="text-slate-500">Gérez les utilisateurs et les agents de la plateforme.</p>
+        <h1 class="text-3xl font-black text-white">Administration</h1>
+        <p class="text-white/50">Gérez les utilisateurs et les agents de la plateforme.</p>
       </header>
 
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <!-- Stats -->
         <div class="lg:col-span-3 grid grid-cols-1 sm:grid-cols-4 gap-6">
-          <div class="bg-white border border-slate-200 p-6 rounded-3xl shadow-sm">
-            <span class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 block">Total Utilisateurs</span>
-            <span class="text-3xl font-black text-slate-900">1,204</span>
+          <div class="bg-white/5 border border-white/10 p-6 rounded-3xl">
+            <span class="text-xs font-bold text-white/30 uppercase tracking-widest mb-1 block">Total Utilisateurs</span>
+            <span class="text-3xl font-black text-white">1,204</span>
           </div>
-          <div class="bg-white border border-slate-200 p-6 rounded-3xl shadow-sm">
-            <span class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 block">Agents Actifs</span>
-            <span class="text-3xl font-black text-indigo-600">24</span>
+          <div class="bg-white/5 border border-white/10 p-6 rounded-3xl">
+            <span class="text-xs font-bold text-white/30 uppercase tracking-widest mb-1 block">Agents Actifs</span>
+            <span class="text-3xl font-black text-secondary">24</span>
           </div>
-          <div class="bg-white border border-slate-200 p-6 rounded-3xl shadow-sm">
-            <span class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 block">Tickets en attente</span>
-            <span class="text-3xl font-black text-rose-500">42</span>
+          <div class="bg-white/5 border border-white/10 p-6 rounded-3xl">
+            <span class="text-xs font-bold text-white/30 uppercase tracking-widest mb-1 block">Tickets en attente</span>
+            <span class="text-3xl font-black text-accent">42</span>
           </div>
-          <div class="bg-white border border-slate-200 p-6 rounded-3xl shadow-sm">
-            <span class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 block">Satisfaction</span>
-            <span class="text-3xl font-black text-emerald-500">98%</span>
+          <div class="bg-white/5 border border-white/10 p-6 rounded-3xl">
+            <span class="text-xs font-bold text-white/30 uppercase tracking-widest mb-1 block">Satisfaction</span>
+            <span class="text-3xl font-black text-green-500">98%</span>
           </div>
         </div>
 
         <!-- Users Table -->
-        <div class="lg:col-span-3 bg-white border border-slate-200 rounded-[2rem] overflow-hidden shadow-sm">
-           <div class="px-8 py-6 border-b border-slate-100 flex items-center justify-between bg-slate-50">
-             <h2 class="text-xl font-bold text-slate-800">Utilisateurs récents</h2>
-             <button (click)="loadUsers()" class="text-indigo-600 text-sm font-bold hover:underline">Actualiser</button>
+        <div class="lg:col-span-3 bg-white/5 border border-white/10 rounded-[2rem] overflow-hidden backdrop-blur-md">
+           <div class="px-8 py-6 border-b border-white/10 flex items-center justify-between">
+             <h2 class="text-xl font-bold text-white">Utilisateurs récents</h2>
+             <button class="text-primary-light text-sm font-bold hover:underline">Voir tous les utilisateurs</button>
            </div>
            <div class="overflow-x-auto">
              <table class="w-full text-left">
-               <thead class="bg-slate-50">
+               <thead class="bg-white/[0.03]">
                  <tr>
-                   <th class="px-8 py-4 text-[0.65rem] font-bold text-slate-400 uppercase tracking-widest">Utilisateur</th>
-                   <th class="px-8 py-4 text-[0.65rem] font-bold text-slate-400 uppercase tracking-widest text-center">Rôle</th>
-                   <th class="px-8 py-4 text-[0.65rem] font-bold text-slate-400 uppercase tracking-widest text-center">Statut</th>
-                   <th class="px-8 py-4 text-[0.65rem] font-bold text-slate-400 uppercase tracking-widest text-right">Actions</th>
+                   <th class="px-8 py-4 text-[0.65rem] font-bold text-white/30 uppercase tracking-widest">Utilisateur</th>
+                   <th class="px-8 py-4 text-[0.65rem] font-bold text-white/30 uppercase tracking-widest text-center">Rôle</th>
+                   <th class="px-8 py-4 text-[0.65rem] font-bold text-white/30 uppercase tracking-widest text-center">Statut</th>
+                   <th class="px-8 py-4 text-[0.65rem] font-bold text-white/30 uppercase tracking-widest text-right">Actions</th>
                  </tr>
                </thead>
-               <tbody *ngIf="users$ | async as users; else loading" class="divide-y divide-slate-100">
-                 <tr *ngFor="let u of users" class="hover:bg-slate-50 transition-colors" [class.opacity-40]="!u.estActif">
+               <tbody *ngIf="users$ | async as users; else loading" class="divide-y divide-white/5">
+                 <tr *ngFor="let u of users.slice(0, 10)" class="hover:bg-white/[0.02] transition-colors">
                    <td class="px-8 py-5">
                      <div class="flex items-center gap-3">
-                       <div class="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600 text-xs">{{ u.nom.charAt(0) }}</div>
+                       <div class="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center font-bold text-primary-light text-xs">{{ u.nom.charAt(0) }}</div>
                        <div class="flex flex-col">
-                         <span class="text-slate-900 text-sm font-semibold">{{ u.nom }}</span>
-                         <span class="text-slate-400 text-xs">{{ u.email }}</span>
+                         <span class="text-white text-sm font-semibold">{{ u.nom }}</span>
+                         <span class="text-[0.7rem] text-white/30">{{ u.email }}</span>
                        </div>
                      </div>
                    </td>
                    <td class="px-8 py-5 text-center">
-                     <span class="px-3 py-1 rounded-full text-[0.6rem] font-bold border border-slate-200 bg-white text-slate-500 uppercase">
+                     <span class="px-2 py-0.5 rounded-md text-[0.6rem] font-bold border border-white/10 text-white/50 uppercase">
                        {{ u.role }}
                      </span>
                    </td>
                    <td class="px-8 py-5 text-center">
-                     <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[0.6rem] font-bold border"
-                        [class.bg-emerald-50]="u.estActif" [class.text-emerald-600]="u.estActif" [class.border-emerald-100]="u.estActif"
-                        [class.bg-rose-50]="!u.estActif" [class.text-rose-600]="!u.estActif" [class.border-rose-100]="!u.estActif">
-                        <span class="w-1.5 h-1.5 rounded-full" [class.bg-emerald-500]="u.estActif" [class.bg-rose-500]="!u.estActif"></span>
-                        {{ u.estActif ? 'ACTIF' : 'ARCHIVÉ' }}
-                     </span>
+                     <span class="inline-flex w-2 h-2 rounded-full bg-green-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></span>
                    </td>
                    <td class="px-8 py-5 text-right">
-                     <button (click)="toggleUser(u)" 
-                        class="px-4 py-2 rounded-xl text-[0.7rem] font-bold transition-all border shadow-sm"
-                        [class.bg-white]="u.estActif" [class.text-rose-600]="u.estActif" [class.border-rose-200]="u.estActif" [class.hover:bg-rose-50]="u.estActif"
-                        [class.bg-emerald-600]="!u.estActif" [class.text-white]="!u.estActif" [class.border-emerald-600]="!u.estActif" [class.hover:bg-emerald-700]="!u.estActif">
-                       {{ u.estActif ? 'Archiver' : 'Désarchiver' }}
+                     <button class="text-white/20 hover:text-white transition-colors">
+                       <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" width="18" height="18"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" /></svg>
                      </button>
                    </td>
                  </tr>
@@ -93,27 +85,15 @@ import { Observable } from 'rxjs';
     </div>
 
     <ng-template #loading>
-      <div class="p-20 text-center"><div class="inline-block w-8 h-8 border-4 border-slate-100 border-t-indigo-600 rounded-full animate-spin"></div></div>
+      <div class="p-20 text-center"><div class="inline-block w-8 h-8 border-4 border-primary/30 border-t-primary rounded-full animate-spin"></div></div>
     </ng-template>
-ate>
   `,
   styles: []
 })
 export class AdminComponent implements OnInit {
   users$?: Observable<User[]>;
-  constructor(private userService: UserService) {}
+  constructor(private http: HttpClient) {}
   ngOnInit() {
-    this.loadUsers();
-  }
-  loadUsers() {
-    this.users$ = this.userService.getAllUsers();
-  }
-  toggleUser(user: User) {
-    if (user.id) {
-      this.userService.toggleStatus(user.id).subscribe({
-        next: () => this.loadUsers(),
-        error: (err: any) => console.error('Erreur', err)
-      });
-    }
+    this.users$ = this.http.get<User[]>('http://localhost:8080/api/v1/users');
   }
 }

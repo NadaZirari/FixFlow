@@ -9,7 +9,7 @@ import { AuthService } from '../../../services/auth.service';
   standalone: true,
   imports: [ReactiveFormsModule, RouterLink, NgIf],
   templateUrl: './register.component.html',
-  styleUrls: ['./register.component.css']
+  styleUrls: ['./register.component.scss']
 })
 export class RegisterComponent {
   form: FormGroup;
@@ -30,9 +30,9 @@ export class RegisterComponent {
     this.error = '';
 
     this.authService.register(this.form.value).subscribe({
-      next: () => this.router.navigate(['/dashboard']),
+      next: () => this.router.navigate(['/user/dashboard']),
       error: (err) => {
-        this.error = 'Cet email est déjà utilisé ou une erreur est survenue.';
+        this.error = 'Cet email est deja utilise ou une erreur est survenue.';
         this.loading = false;
       }
     });

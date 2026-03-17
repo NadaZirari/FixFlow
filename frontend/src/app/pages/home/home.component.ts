@@ -1,28 +1,36 @@
 import { Component } from '@angular/core';
-import { RouterLink } from '@angular/router';
-import { NgFor } from '@angular/common';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [RouterLink, NgFor],
+  imports: [CommonModule, RouterModule],
   templateUrl: './home.component.html',
-  styleUrls: ['./home.component.css']
+  styleUrl: './home.component.css'
 })
 export class HomeComponent {
-  features = [
-    { icon: '🎫', title: 'Gestion de tickets', desc: 'Créez et suivez vos demandes de support en temps réel avec un système de statut clair.' },
-    { icon: '👥', title: 'Équipe dédiée', desc: 'Des agents assignés personnellement à chaque ticket pour une résolution rapide et efficace.' },
-    { icon: '💬', title: 'Communication fluide', desc: 'Échangez directement avec votre agent via les commentaires intégrés à chaque ticket.' },
-    { icon: '🔔', title: 'Notifications instantanées', desc: 'Soyez informé à chaque étape du traitement de vos demandes en temps réel.' },
-    { icon: '📊', title: 'Tableau de bord', desc: 'Visualisez l\'état de tous vos tickets et suivez leur progression depuis un seul endroit.' },
-    { icon: '🔒', title: 'Sécurité maximale', desc: "Vos données sont protégées par un système d'authentification JWT robuste." },
+  stats = [
+    { label: 'Utilisateurs actifs', value: '2k+' },
+    { label: 'Tickets résolus', value: '15k+' },
+    { label: 'Temps de réponse', value: '< 2h' }
   ];
 
-  stats = [
-    { value: '99%', label: 'Taux de satisfaction' },
-    { value: '<2h', label: 'Temps de réponse moyen' },
-    { value: '24/7', label: 'Support disponible' },
-    { value: '10k+', label: 'Tickets résolus' },
+  features = [
+    {
+      icon: '🎫',
+      title: 'Gestion de Tickets',
+      desc: 'Créez et suivez vos tickets de support en quelques clics avec un suivi en temps réel.'
+    },
+    {
+      icon: '⚡',
+      title: 'Réponses Rapides',
+      desc: 'Nos agents sont formés pour répondre à vos besoins le plus rapidement possible.'
+    },
+    {
+      icon: '🔐',
+      title: 'Sécurité Maximale',
+      desc: 'Vos données et communications sont protégées par les standards de sécurité les plus élevés.'
+    }
   ];
 }

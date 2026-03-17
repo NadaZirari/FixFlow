@@ -19,5 +19,5 @@ export interface TicketRequest {
   titre: string;
   description: string;
   priorite: PrioriteTicket;
-  categorie?: CategorieTicket;
+  categorieId?: number;
 }

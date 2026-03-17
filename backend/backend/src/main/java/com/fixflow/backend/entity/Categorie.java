@@ -1,6 +1,6 @@
 package com.fixflow.backend.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -22,7 +22,7 @@ public class Categorie {
     private String nom;
 
     @OneToMany(mappedBy = "categorie", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonIgnoreProperties("categorie")
+    @JsonIgnore
     private Set<Ticket> tickets = new HashSet<>();
 
     public Categorie() {}

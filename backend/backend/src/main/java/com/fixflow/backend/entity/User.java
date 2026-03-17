@@ -38,6 +38,7 @@ public class User implements UserDetails {
     @Column(name = "email", nullable = false, unique = true)
     private String email;
     
+    @com.fasterxml.jackson.annotation.JsonProperty(access = com.fasterxml.jackson.annotation.JsonProperty.Access.WRITE_ONLY)
     @NotBlank(message = "Le mot de passe est obligatoire")
     @Column(name = "mot_de_passe", nullable = false)
     private String motDePasse;

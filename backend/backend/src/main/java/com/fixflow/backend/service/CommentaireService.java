@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
-public class CommentaireService {
+public class  CommentaireService {
     
     private final CommentaireRepository commentaireRepository;
     private final TicketService ticketService;

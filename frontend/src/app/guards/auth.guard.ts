@@ -18,7 +18,7 @@ export const adminGuard: CanActivateFn = () => {
   if (authService.isAdmin) {
     return true;
   }
-  router.navigate(['/dashboard']);
+  router.navigate(['/user/dashboard']);
   return false;
 };
 
@@ -26,7 +26,12 @@ export const publicGuard: CanActivateFn = () => {
   const authService = inject(AuthService);
   const router = inject(Router);
   if (authService.isLoggedIn) {
-    router.navigate(['/dashboard']);
+    const user = authService.currentUser;
+    if (user?.role === 'ADMIN') {
+      router.navigate(['/admin/dashboard']);
+    } else {
+      router.navigate(['/user/dashboard']);
+    }
     return false;
   }
   return true;
