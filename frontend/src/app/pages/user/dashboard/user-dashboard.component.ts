@@ -1,15 +1,96 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { TicketService } from '../../../services/ticket.service';
 
 @Component({
   selector: 'app-user-dashboard',
   standalone: true,
+  imports: [CommonModule],
   template: `
     <div class="p-8">
-      <h1 class="text-2xl font-bold text-gray-800 mb-6">Tableau de bord</h1>
-      <div class="bg-white rounded-lg border border-gray-200 p-6">
-        <p class="text-gray-500">Contenu du tableau de bord utilisateur...</p>
+      <div class="mb-10">
+        <h1 class="text-3xl font-black text-gray-900 tracking-tight">Tableau de bord</h1>
+        <p class="text-gray-500 mt-2">Suivez l'état de vos demandes de maintenance en temps réel.</p>
+      </div>
+
+      <div *ngIf="stats" class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <!-- Mes Total Tickets -->
+        <div class="group bg-white p-8 rounded-3xl border-2 border-gray-100 shadow-xl shadow-gray-100/50 hover:shadow-2xl hover:shadow-blue-100/50 transition-all duration-300 hover:-translate-y-2">
+          <div class="flex justify-between items-start mb-6">
+            <div class="p-3 bg-blue-50 text-blue-600 rounded-2xl group-hover:bg-blue-600 group-hover:text-white transition-colors duration-300">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+              </svg>
+            </div>
+            <span class="text-xs font-black text-gray-400 uppercase tracking-widest">Total</span>
+          </div>
+          <div class="text-4xl font-black text-gray-900 mb-2">{{ stats.totalTickets }}</div>
+          <div class="text-sm font-bold text-gray-500 uppercase tracking-wide">Mes tickets</div>
+        </div>
+
+        <!-- Mes Attente -->
+        <div class="group bg-white p-8 rounded-3xl border-2 border-gray-100 shadow-xl shadow-gray-100/50 hover:shadow-2xl hover:shadow-amber-100/50 transition-all duration-300 hover:-translate-y-2">
+          <div class="flex justify-between items-start mb-6">
+            <div class="p-3 bg-amber-50 text-amber-600 rounded-2xl group-hover:bg-amber-600 group-hover:text-white transition-colors duration-300">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <span class="text-xs font-black text-amber-400 uppercase tracking-widest">En attente</span>
+          </div>
+          <div class="text-4xl font-black text-gray-900 mb-2">{{ stats.openTickets }}</div>
+          <div class="text-sm font-bold text-gray-500 uppercase tracking-wide">Tickets non traités</div>
+        </div>
+
+        <!-- Mes Résolus -->
+        <div class="group bg-white p-8 rounded-3xl border-2 border-gray-100 shadow-xl shadow-gray-100/50 hover:shadow-2xl hover:shadow-emerald-100/50 transition-all duration-300 hover:-translate-y-2">
+          <div class="flex justify-between items-start mb-6">
+            <div class="p-3 bg-emerald-50 text-emerald-600 rounded-2xl group-hover:bg-emerald-600 group-hover:text-white transition-colors duration-300">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <span class="text-xs font-black text-emerald-400 uppercase tracking-widest">Terminé</span>
+          </div>
+          <div class="text-4xl font-black text-gray-900 mb-2">{{ stats.resolvedTickets }}</div>
+          <div class="text-sm font-bold text-gray-500 uppercase tracking-wide">Demandes résolues</div>
+        </div>
+
+        <!-- In Progress Banner -->
+        <div *ngIf="stats.inProgressTickets > 0" class="md:col-span-3 bg-blue-600 rounded-3xl p-6 text-white flex items-center justify-between shadow-lg shadow-blue-200">
+          <div class="flex items-center gap-4">
+            <div class="animate-pulse w-3 h-3 bg-white rounded-full"></div>
+            <span class="font-bold tracking-wide">Vous avez {{ stats.inProgressTickets }} ticket(s) en cours de traitement</span>
+          </div>
+          <button class="px-6 py-2 bg-white/20 hover:bg-white/30 rounded-xl font-bold transition-all backdrop-blur-sm">
+            Voir le suivi
+          </button>
+        </div>
+      </div>
+
+      <div *ngIf="!stats" class="flex flex-col items-center justify-center p-20 animate-pulse">
+        <div class="w-16 h-16 bg-gray-100 rounded-full mb-4"></div>
+        <div class="h-4 w-48 bg-gray-100 rounded mb-2"></div>
       </div>
     </div>
   `
 })
-export class UserDashboardComponent {}
+export class UserDashboardComponent implements OnInit {
+  stats: any = null;
+
+  constructor(private ticketService: TicketService) {}
+
+  ngOnInit(): void {
+    this.ticketService.getMyTickets().subscribe({
+      next: (tickets) => {
+        this.stats = {
+          totalTickets: tickets.length,
+          openTickets: tickets.filter(t => t.statut === 'OUVERT').length,
+          inProgressTickets: tickets.filter(t => t.statut === 'EN_COURS').length,
+          resolvedTickets: tickets.filter(t => t.statut === 'RESOLU').length
+        };
+      },
+      error: (err) => console.error('Erreur stats user:', err)
+    });
+  }
+}

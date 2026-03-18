@@ -1,15 +1,141 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { TicketService } from '../../../services/ticket.service';
+import { UserService } from '../../../services/user.service';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
+  imports: [CommonModule],
   template: `
     <div class="p-8">
-      <h1 class="text-2xl font-bold text-gray-800 mb-6">Tableau de bord Admin</h1>
-      <div class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
-        <p class="text-gray-600">Statistiques et vue d'ensemble...</p>
+      <div class="mb-10">
+        <h1 class="text-3xl font-black text-gray-900 tracking-tight">Tableau de bord Admin</h1>
+        <p class="text-gray-500 mt-2">Aperçu global de l'activité de la plateforme FixFlow.</p>
+      </div>
+
+      <div *ngIf="stats" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <!-- Total Tickets -->
+        <div class="group bg-white p-8 rounded-3xl border-2 border-gray-100 shadow-xl shadow-gray-100/50 hover:shadow-2xl hover:shadow-blue-100/50 transition-all duration-300 hover:-translate-y-2">
+          <div class="flex justify-between items-start mb-6">
+            <div class="p-3 bg-blue-50 text-blue-600 rounded-2xl group-hover:bg-blue-600 group-hover:text-white transition-colors duration-300">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+            </div>
+            <span class="text-xs font-black text-gray-400 uppercase tracking-widest">Total</span>
+          </div>
+          <div class="text-4xl font-black text-gray-900 mb-2">{{ stats.totalTickets }}</div>
+          <div class="text-sm font-bold text-gray-500 uppercase tracking-wide">Tickets créés</div>
+        </div>
+
+        <!-- Pending -->
+        <div class="group bg-white p-8 rounded-3xl border-2 border-gray-100 shadow-xl shadow-gray-100/50 hover:shadow-2xl hover:shadow-amber-100/50 transition-all duration-300 hover:-translate-y-2">
+          <div class="flex justify-between items-start mb-6">
+            <div class="p-3 bg-amber-50 text-amber-600 rounded-2xl group-hover:bg-amber-600 group-hover:text-white transition-colors duration-300">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <span class="text-xs font-black text-amber-400 uppercase tracking-widest">Attente</span>
+          </div>
+          <div class="text-4xl font-black text-gray-900 mb-2">{{ stats.openTickets }}</div>
+          <div class="text-sm font-bold text-gray-500 uppercase tracking-wide">En attente</div>
+        </div>
+
+        <!-- In Progress -->
+        <div class="group bg-white p-8 rounded-3xl border-2 border-gray-100 shadow-xl shadow-gray-100/50 hover:shadow-2xl hover:shadow-indigo-100/50 transition-all duration-300 hover:-translate-y-2">
+          <div class="flex justify-between items-start mb-6">
+            <div class="p-3 bg-indigo-50 text-indigo-600 rounded-2xl group-hover:bg-indigo-600 group-hover:text-white transition-colors duration-300">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
+            </div>
+            <span class="text-xs font-black text-indigo-400 uppercase tracking-widest">Cours</span>
+          </div>
+          <div class="text-4xl font-black text-gray-900 mb-2">{{ stats.inProgressTickets }}</div>
+          <div class="text-sm font-bold text-gray-500 uppercase tracking-wide">En cours</div>
+        </div>
+
+        <!-- Resolved -->
+        <div class="group bg-white p-8 rounded-3xl border-2 border-gray-100 shadow-xl shadow-gray-100/50 hover:shadow-2xl hover:shadow-emerald-100/50 transition-all duration-300 hover:-translate-y-2">
+          <div class="flex justify-between items-start mb-6">
+            <div class="p-3 bg-emerald-50 text-emerald-600 rounded-2xl group-hover:bg-emerald-600 group-hover:text-white transition-colors duration-300">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <span class="text-xs font-black text-emerald-400 uppercase tracking-widest">Résolus</span>
+          </div>
+          <div class="text-4xl font-black text-gray-900 mb-2">{{ stats.resolvedTickets }}</div>
+          <div class="text-sm font-bold text-gray-500 uppercase tracking-wide">Tickets résolus</div>
+        </div>
+
+        <!-- Users Count -->
+        <div class="group bg-slate-900 p-8 rounded-3xl shadow-2xl shadow-slate-200 transition-all duration-300 hover:-translate-y-2 lg:col-span-2">
+          <div class="flex items-center gap-6">
+            <div class="p-4 bg-slate-800 text-blue-400 rounded-2xl">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+              </svg>
+            </div>
+            <div>
+              <div class="text-4xl font-black text-white mb-1">{{ stats.totalUsers }}</div>
+              <div class="text-sm font-bold text-slate-400 uppercase tracking-widest">Utilisateurs inscrits</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Categories Count -->
+        <div class="group bg-indigo-600 p-8 rounded-3xl shadow-2xl shadow-indigo-200 transition-all duration-300 hover:-translate-y-2 lg:col-span-2">
+          <div class="flex items-center gap-6">
+            <div class="p-4 bg-indigo-500 text-white rounded-2xl">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+              </svg>
+            </div>
+            <div>
+              <div class="text-4xl font-black text-white mb-1">{{ stats.totalCategories }}</div>
+              <div class="text-sm font-bold text-indigo-100 uppercase tracking-widest">Catégories de service</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="!stats" class="flex flex-col items-center justify-center p-20 animate-pulse">
+        <div class="w-16 h-16 bg-gray-100 rounded-full mb-4"></div>
+        <div class="h-4 w-48 bg-gray-100 rounded mb-2"></div>
+        <div class="h-3 w-32 bg-gray-50 rounded"></div>
       </div>
     </div>
   `
 })
-export class AdminDashboardComponent {}
+export class AdminDashboardComponent implements OnInit {
+  stats: any = null;
+
+  constructor(
+    private ticketService: TicketService,
+    private userService: UserService
+  ) {}
+
+  ngOnInit(): void {
+    forkJoin({
+      tickets: this.ticketService.getAllTickets(),
+      users: this.userService.getAll(),
+      categories: this.ticketService.getCategories()
+    }).subscribe({
+      next: (data) => {
+        this.stats = {
+          totalTickets: data.tickets.length,
+          openTickets: data.tickets.filter(t => t.statut === 'OUVERT').length,
+          inProgressTickets: data.tickets.filter(t => t.statut === 'EN_COURS').length,
+          resolvedTickets: data.tickets.filter(t => t.statut === 'RESOLU').length,
+          totalUsers: data.users.length,
+          totalCategories: data.categories.length
+        };
+      },
+      error: (err) => console.error('Erreur stats admin:', err)
+    });
+  }
+}
