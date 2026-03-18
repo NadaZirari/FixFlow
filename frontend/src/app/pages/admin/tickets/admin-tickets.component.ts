@@ -65,19 +65,12 @@ import { Ticket } from '../../../models/ticket.model';
                 </span>
               </td>
               <td class="px-6 py-5 text-center">
-                <div class="flex items-center justify-center gap-2">
-                  <button *ngIf="ticket.statut === 'OUVERT'" (click)="updateStatus(ticket.id, 'EN_COURS')" class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors title='Traiter'">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                  </button>
-                  <button *ngIf="ticket.statut !== 'RESOLU' && ticket.statut !== 'ARCHIVE'" (click)="updateStatus(ticket.id, 'RESOLU')" class="p-2 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors title='Résoudre'">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                    </svg>
-                  </button>
-                </div>
+                <button [routerLink]="['/admin/tickets', ticket.id]" class="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors" title="Consulter">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                  </svg>
+                </button>
               </td>
             </tr>
           </tbody>
@@ -100,23 +93,16 @@ export class AdminTicketsComponent implements OnInit {
     this.loading = true;
     this.ticketService.getAllTickets().subscribe({
       next: (res) => {
-        console.log('DEBUG [AdminTickets]: Received tickets:', res);
         this.tickets = res;
         this.loading = false;
       },
       error: (err) => {
-        console.error('DEBUG [AdminTickets]: Erreur chargement tickets:', err);
+        console.error('Erreur chargement tickets:', err);
         this.loading = false;
       }
     });
   }
 
-  updateStatus(id: number, statut: string): void {
-    this.ticketService.updateStatus(id, statut).subscribe({
-      next: () => this.loadTickets(),
-      error: (err) => console.error('Erreur status update:', err)
-    });
-  }
 
   getStatusClass(status: string): string {
     switch (status) {

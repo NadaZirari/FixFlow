@@ -50,7 +50,7 @@ public class  CommentaireService {
         User auteur = userService.findByEmail(email);
         Ticket ticket = ticketService.findById(ticketId);
         
-        // Vérification des droits : Seul l'auteur du ticket ou un ADMIN peut commenter
+        // Vérification des droits : Seul l'auteur du ticket ou l'ADMIN peut commenter
         boolean estAuteur = ticket.getUser().getId().equals(auteur.getId());
         boolean estAdmin = auteur.getRole().getNom().equals("ADMIN");
 

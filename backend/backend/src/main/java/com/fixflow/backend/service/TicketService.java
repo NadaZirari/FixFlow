@@ -48,7 +48,6 @@ public class TicketService {
     @Transactional
     public TicketResponse createTicket(TicketRequest request, MultipartFile file) {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        System.out.println("DEBUG: Creating ticket for user: " + email);
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
 
@@ -67,7 +66,6 @@ public class TicketService {
         }
         
         Ticket savedTicket = ticketRepository.save(ticket);
-        System.out.println("DEBUG: Ticket saved with ID: " + savedTicket.getId());
         return mapToResponse(savedTicket);
     }
 
@@ -76,17 +74,13 @@ public class TicketService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
         
-        List<Ticket> tickets = ticketRepository.findByUser(user);
-        System.out.println("DEBUG: getMyTickets for " + email + " found " + tickets.size() + " tickets");
-        return tickets.stream()
+        return ticketRepository.findByUser(user).stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }
 
     public List<TicketResponse> getAllTickets() {
-        List<Ticket> tickets = ticketRepository.findAll();
-        System.out.println("DEBUG: getAllTickets found " + tickets.size() + " tickets");
-        return tickets.stream()
+        return ticketRepository.findAll().stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }

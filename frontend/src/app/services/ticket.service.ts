@@ -8,6 +8,13 @@ export interface Categorie {
   nom: string;
 }
 
+export interface Comment {
+  id: number;
+  contenu: string;
+  date: string;
+  auteurNom: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class TicketService {
   private readonly API = 'http://localhost:8081/api/v1/tickets';
@@ -42,6 +49,18 @@ export class TicketService {
 
   deleteTicket(id: number): Observable<void> {
     return this.http.delete<void>(`${this.API}/${id}`);
+  }
+
+  getById(id: number): Observable<Ticket> {
+    return this.http.get<Ticket>(`${this.API}/${id}`);
+  }
+
+  getComments(ticketId: number): Observable<Comment[]> {
+    return this.http.get<Comment[]>(`http://localhost:8081/api/v1/commentaires/ticket/${ticketId}`);
+  }
+
+  addComment(ticketId: number, contenu: string): Observable<Comment> {
+    return this.http.post<Comment>(`http://localhost:8081/api/v1/commentaires/ticket/${ticketId}`, { contenu });
   }
 
   getCategories(): Observable<Categorie[]> {

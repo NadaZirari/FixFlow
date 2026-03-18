@@ -32,6 +32,10 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/user/tickets/new/user-ticket-new.component').then(m => m.UserTicketNewComponent)
       },
       {
+        path: 'tickets/:id',
+        loadComponent: () => import('./pages/shared/ticket-detail/ticket-detail.component').then(m => m.TicketDetailComponent)
+      },
+      {
         path: 'profile',
         loadComponent: () => import('./pages/user/profile/user-profile.component').then(m => m.UserProfileComponent)
       },
@@ -56,6 +60,10 @@ export const routes: Routes = [
       {
         path: 'tickets',
         loadComponent: () => import('./pages/admin/tickets/admin-tickets.component').then(m => m.AdminTicketsComponent)
+      },
+      {
+        path: 'tickets/:id',
+        loadComponent: () => import('./pages/shared/ticket-detail/ticket-detail.component').then(m => m.TicketDetailComponent)
       },
       {
         path: 'users',
