@@ -44,6 +44,14 @@ import { AuthService } from '../../../services/auth.service';
               <div class="prose max-w-none text-gray-600 mb-8 whitespace-pre-wrap">
                 {{ ticket?.description }}
               </div>
+
+              <!-- Image Preview if applicable -->
+              <div *ngIf="ticket?.cheminFichier && isImage(ticket!.cheminFichier!)" class="mb-8 p-2 bg-gray-50 rounded-2xl border border-gray-100 inline-block">
+                <img [src]="'http://localhost:8081/uploads/' + ticket?.cheminFichier" 
+                     alt="Pièce jointe"
+                     class="max-h-80 rounded-xl shadow-sm hover:scale-[1.02] transition-transform cursor-pointer"
+                     (click)="openImage('http://localhost:8081/uploads/' + ticket?.cheminFichier)">
+              </div>
               
               <div class="grid grid-cols-2 gap-6 pt-6 border-t border-gray-50 text-sm">
                 <div>
@@ -134,14 +142,17 @@ import { AuthService } from '../../../services/auth.service';
                 Marquer comme résolu
               </button>
 
-              <button class="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-50 text-gray-600 font-bold transition-all group">
+              <a *ngIf="ticket?.cheminFichier" 
+                [href]="'http://localhost:8081/uploads/' + ticket?.cheminFichier" 
+                target="_blank"
+                class="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-50 text-gray-600 font-bold transition-all group">
                 <span class="p-2 bg-gray-100 rounded-lg group-hover:bg-gray-200 transition-colors">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                   </svg>
                 </span>
                 Télécharger PJ
-              </button>
+              </a>
             </div>
           </div>
         </div>
@@ -235,5 +246,14 @@ export class TicketDetailComponent implements OnInit {
       case 'MOYENNE': return 'bg-blue-50 text-blue-700 border-blue-100';
       default: return 'bg-gray-50 text-gray-700 border-gray-100';
     }
+  }
+
+  isImage(filename: string): boolean {
+    const ext = filename.split('.').pop()?.toLowerCase();
+    return ['png', 'jpg', 'jpeg', 'gif', 'webp'].includes(ext || '');
+  }
+
+  openImage(url: string): void {
+    window.open(url, '_blank');
   }
 }

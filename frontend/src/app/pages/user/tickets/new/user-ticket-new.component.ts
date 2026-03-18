@@ -81,6 +81,46 @@ import { TicketService, Categorie } from '../../../../services/ticket.service';
                   La description est obligatoire (min 10 caractères).
                 </p>
               </div>
+
+               <!-- Fichier Joint -->
+               <div class="md:col-span-2">
+                <label class="block text-sm font-semibold text-gray-700 mb-2">Pièce jointe (facultatif)</label>
+                <div 
+                  class="relative border-2 border-dashed border-gray-200 rounded-3xl p-8 transition-all hover:border-blue-400 group flex flex-col items-center justify-center bg-gray-50/50 min-h-[160px]"
+                  [ngClass]="{'border-blue-400 bg-blue-50/30': selectedFile}"
+                >
+                  <input 
+                    type="file" 
+                    (change)="onFileSelected($event)"
+                    class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                    accept="image/*,.pdf,.doc,.docx,.txt"
+                  >
+                  
+                  <div *ngIf="!selectedFile" class="flex flex-col items-center text-center">
+                    <div class="p-4 bg-white rounded-2xl shadow-sm mb-3 group-hover:scale-110 transition-transform duration-300 text-gray-400 group-hover:text-blue-500">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                      </svg>
+                    </div>
+                    <p class="text-sm font-bold text-gray-600 mb-1">Cliquez ou glissez un fichier ici</p>
+                    <p class="text-xs text-gray-400 font-medium">Images, PDF ou documents (Max 10MB)</p>
+                  </div>
+
+                  <div *ngIf="selectedFile" class="flex flex-col items-center text-center w-full">
+                    <div class="p-4 bg-blue-600 text-white rounded-2xl shadow-lg mb-3">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </div>
+                    <p class="text-sm font-black text-blue-600 mb-1 truncate max-w-[80%]">{{ selectedFile!.name }}</p>
+                    <p class="text-xs text-blue-400 font-bold uppercase tracking-widest">{{ (selectedFile!.size / 1024).toFixed(0) }} KB</p>
+                    
+                    <button type="button" (click)="removeFile($event)" class="mt-4 relative z-10 text-xs font-bold text-red-500 hover:text-white hover:bg-red-500 transition-all px-4 py-2 rounded-xl border border-red-100 bg-white shadow-sm">
+                      Supprimer le fichier
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
 
             <!-- Actions -->
@@ -112,6 +152,7 @@ export class UserTicketNewComponent implements OnInit {
   categories: Categorie[] = [];
   submitting = false;
   showErrors = false;
+  selectedFile: File | null = null;
   message: string | null = null;
   messageType: 'success' | 'error' = 'success';
 
@@ -137,6 +178,18 @@ export class UserTicketNewComponent implements OnInit {
 
   get f() { return this.ticketForm.controls; }
 
+  onFileSelected(event: any): void {
+    const file = event.target.files[0];
+    if (file) {
+      this.selectedFile = file;
+    }
+  }
+
+  removeFile(event: Event): void {
+    event.stopPropagation();
+    this.selectedFile = null;
+  }
+
   onSubmit(): void {
     this.showErrors = true;
     if (this.ticketForm.invalid) return;
@@ -144,7 +197,7 @@ export class UserTicketNewComponent implements OnInit {
     this.submitting = true;
     this.message = null;
 
-    this.ticketService.createTicket(this.ticketForm.value).subscribe({
+    this.ticketService.createTicket(this.ticketForm.value, this.selectedFile).subscribe({
       next: (res) => {
         this.message = 'Ticket créé avec succès !';
         this.messageType = 'success';
