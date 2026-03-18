@@ -19,7 +19,7 @@ public class TicketController {
     private final TicketService ticketService;
 
     @PostMapping(consumes = org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE)
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasAuthority('ROLE_USER')")
     public ResponseEntity<TicketResponse> createTicketMultipart(
             @RequestPart("ticket") TicketRequest request,
             @RequestPart(value = "file", required = false) org.springframework.web.multipart.MultipartFile file
@@ -28,31 +28,31 @@ public class TicketController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasAuthority('ROLE_USER')")
     public ResponseEntity<TicketResponse> createTicket(@RequestBody TicketRequest request) {
         return ResponseEntity.ok(ticketService.createTicket(request, null));
     }
 
     @GetMapping("/my")
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasAuthority('ROLE_USER')")
     public ResponseEntity<List<TicketResponse>> getMyTickets() {
         return ResponseEntity.ok(ticketService.getMyTickets());
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<List<TicketResponse>> getAllTickets() {
         return ResponseEntity.ok(ticketService.getAllTickets());
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN') or @ticketService.findById(#id).user.email == authentication.principal.username")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or @ticketService.findById(#id).user.email == authentication.principal.username")
     public ResponseEntity<TicketResponse> getTicketById(@PathVariable Long id) {
         return ResponseEntity.ok(ticketService.getTicketResponseById(id));
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     public ResponseEntity<TicketResponse> updateTicket(
             @PathVariable Long id,
             @RequestBody TicketRequest request
@@ -61,7 +61,7 @@ public class TicketController {
     }
 
     @PutMapping("/{id}/status")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<TicketResponse> updateStatus(
             @PathVariable Long id,
             @RequestParam StatutTicket statut

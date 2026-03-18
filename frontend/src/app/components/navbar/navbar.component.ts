@@ -19,7 +19,7 @@ import { AuthService } from '../../services/auth.service';
           <ng-container *ngIf="authService.currentUser$ | async as user; else guestLinks">
             <a routerLink="/dashboard" routerLinkActive="active" class="nav-link-tw">Dashboard</a>
             <a routerLink="/tickets" routerLinkActive="active" class="nav-link-tw">Mes Tickets</a>
-            <a *ngIf="user.role === 'ADMIN'" routerLink="/admin" routerLinkActive="active" class="nav-link-tw">Admin</a>
+            <a *ngIf="user.role.nom === 'ADMIN'" routerLink="/admin" routerLinkActive="active" class="nav-link-tw">Admin</a>
             <div class="flex items-center gap-3 ml-2">
               <span class="w-9 h-9 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center font-bold text-sm text-white shadow-lg">
                 {{ user.nom.charAt(0).toUpperCase() }}

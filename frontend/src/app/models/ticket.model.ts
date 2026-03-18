@@ -8,7 +8,8 @@ export interface Ticket {
   description: string;
   statut: StatutTicket;
   priorite: PrioriteTicket;
-  categorie?: CategorieTicket;
+  categorieNom?: string;
+  categorieId?: number;
   cheminFichier?: string;
   dateCreation: string;
   userNom: string;

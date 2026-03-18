@@ -7,7 +7,7 @@ export interface CreateUserRequest {
   nom: string;
   email: string;
   motDePasse: string;
-  role: 'USER' | 'ADMIN';
+  role: { nom: string };
 }
 
 @Injectable({ providedIn: 'root' })

@@ -18,6 +18,7 @@ import java.util.Set;
 @Entity
 @Table(name = "ticket")
 @EntityListeners(AuditingEntityListener.class)
+@com.fasterxml.jackson.annotation.JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Ticket {
     
     @Id

@@ -30,7 +30,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
         String path = request.getRequestURI();
-        if (path.startsWith("/api/v1/auth") || path.startsWith("/v3/api-docs") || path.contains("/swagger-ui")) {
+        if (path.equals("/api/v1/auth/authenticate") || path.equals("/api/v1/auth/register") || 
+            path.startsWith("/v3/api-docs") || path.contains("/swagger-ui")) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -41,21 +42,27 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
-        jwt = authHeader.substring(7);
-        userEmail = jwtService.extractUsername(jwt);
-        if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
-            if (jwtService.isTokenValid(jwt, userDetails)) {
-                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                        userDetails,
-                        null,
-                        userDetails.getAuthorities()
-                );
-                authToken.setDetails(
-                        new WebAuthenticationDetailsSource().buildDetails(request)
-                );
-                SecurityContextHolder.getContext().setAuthentication(authToken);
+        try {
+            jwt = authHeader.substring(7);
+            userEmail = jwtService.extractUsername(jwt);
+            if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
+                if (jwtService.isTokenValid(jwt, userDetails)) {
+                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                            userDetails,
+                            null,
+                            userDetails.getAuthorities()
+                    );
+                    authToken.setDetails(
+                            new WebAuthenticationDetailsSource().buildDetails(request)
+                    );
+                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                    logger.info("Authenticated user: " + userEmail + ", Authorities: " + userDetails.getAuthorities());
+                }
             }
+        } catch (Exception e) {
+            logger.error("Token validation failed for path: " + path + ". Error: " + e.getMessage() + ". Header: " + 
+                (authHeader.length() > 15 ? authHeader.substring(0, 15) + "..." : "short header"));
         }
         filterChain.doFilter(request, response);
     }

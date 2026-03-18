@@ -11,7 +11,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/categories")
-@CrossOrigin(origins = "*", maxAge = 3600)
 public class CategorieController {
 
     private final CategorieService categorieService;
@@ -31,19 +30,19 @@ public class CategorieController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<Categorie> createCategorie(@Valid @RequestBody Categorie categorie) {
         return ResponseEntity.ok(categorieService.create(categorie));
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<Categorie> updateCategorie(@PathVariable Long id, @Valid @RequestBody Categorie categorie) {
         return ResponseEntity.ok(categorieService.update(id, categorie));
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<Void> deleteCategorie(@PathVariable Long id) {
         categorieService.delete(id);
         return ResponseEntity.noContent().build();

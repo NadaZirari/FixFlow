@@ -32,7 +32,7 @@ export class LoginComponent {
     this.authService.login(this.form.value).subscribe({
       next: () => {
         const user = this.authService.currentUser;
-        if (user?.role === 'ADMIN') {
+        if (user?.role?.nom === 'ADMIN') {
           this.router.navigate(['/admin/dashboard']);
         } else {
           this.router.navigate(['/user/dashboard']);

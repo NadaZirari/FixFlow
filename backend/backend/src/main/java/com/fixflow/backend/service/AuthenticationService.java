@@ -6,6 +6,7 @@ import com.fixflow.backend.dto.RegisterRequest;
 import com.fixflow.backend.entity.User;
 import com.fixflow.backend.repository.UserRepository;
 import com.fixflow.backend.security.JwtService;
+import com.fixflow.backend.service.RoleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -19,6 +20,7 @@ public class AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+    private final RoleService roleService;
 
     public AuthenticationResponse register(RegisterRequest request) {
         var user = new User(
@@ -26,6 +28,8 @@ public class AuthenticationService {
                 request.getEmail(),
                 passwordEncoder.encode(request.getMotDePasse())
         );
+        user.setRole(roleService.findByNom("USER"));
+        user.setEstActif(true);
         repository.save(user);
         var jwtToken = jwtService.generateToken(user);
         return AuthenticationResponse.builder()

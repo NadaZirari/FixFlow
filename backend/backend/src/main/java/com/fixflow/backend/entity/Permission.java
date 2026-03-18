@@ -22,6 +22,7 @@ public class Permission {
     private String description;
     
     @ManyToMany(mappedBy = "permissions", fetch = FetchType.LAZY)
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private Set<Role> roles = new HashSet<>();
     
     // Constructeurs

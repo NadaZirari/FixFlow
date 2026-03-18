@@ -2,7 +2,7 @@ export interface User {
   id: number;
   nom: string;
   email: string;
-  role: 'USER' | 'SUPPORT' | 'ADMIN';
+  role: { id?: number; nom: string };
   estActif: boolean;
   dateCreation?: string;
 }

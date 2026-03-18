@@ -52,7 +52,7 @@ public class  CommentaireService {
         
         // Vérification des droits : Seul l'auteur du ticket ou un ADMIN peut commenter
         boolean estAuteur = ticket.getUser().getId().equals(auteur.getId());
-        boolean estAdmin = auteur.getRole() == com.fixflow.backend.enums.Role.ADMIN;
+        boolean estAdmin = auteur.getRole().getNom().equals("ADMIN");
 
         if (!estAuteur && !estAdmin) {
             throw new RuntimeException("Accès refusé : Seul l'auteur du ticket ou un administrateur peut ajouter un commentaire.");

@@ -8,6 +8,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "role")
+@com.fasterxml.jackson.annotation.JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Role {
     
     @Id
@@ -27,6 +28,7 @@ public class Role {
     private Set<Permission> permissions = new HashSet<>();
     
     @OneToMany(mappedBy = "role", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private Set<User> utilisateurs = new HashSet<>();
     
     // Constructeurs

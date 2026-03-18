@@ -23,6 +23,7 @@ public class TicketResponse {
     private String categorieNom;
     private Long categorieId;
     private String cheminFichier;
+    @com.fasterxml.jackson.annotation.JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime dateCreation;
     private String userNom;
 }

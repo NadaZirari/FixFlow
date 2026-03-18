@@ -1,7 +1,6 @@
 package com.fixflow.backend.entity;
 
-import com.fixflow.backend.enums.Role;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fixflow.backend.entity.Role;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -22,6 +21,7 @@ import java.util.Set;
 @Entity
 @Table(name = "utilisateur")
 @EntityListeners(AuditingEntityListener.class)
+@com.fasterxml.jackson.annotation.JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class User implements UserDetails {
     
     @Id
@@ -43,9 +43,9 @@ public class User implements UserDetails {
     @Column(name = "mot_de_passe", nullable = false)
     private String motDePasse;
     
-    @Enumerated(EnumType.STRING)
-    @Column(name = "role", nullable = false)
-    private Role role = Role.USER;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "role", nullable = false)
+    private Role role;
     
     @CreatedDate
     @Column(name = "date_creation", nullable = false, updatable = false)
@@ -55,11 +55,11 @@ public class User implements UserDetails {
     private Boolean estActif = true;
     
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonIgnoreProperties("user")
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private Set<Ticket> tickets = new HashSet<>();
     
     @OneToMany(mappedBy = "auteur", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonIgnoreProperties({"auteur", "ticket"})
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private Set<Commentaire> commentaires = new HashSet<>();
     
     
@@ -75,7 +75,10 @@ public class User implements UserDetails {
     // Spring Security UserDetails implementation
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
+        if (role == null) {
+            return List.of();
+        }
+        return List.of(new SimpleGrantedAuthority("ROLE_" + role.getNom()));
     }
 
     @Override

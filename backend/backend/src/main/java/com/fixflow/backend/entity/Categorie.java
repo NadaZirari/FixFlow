@@ -10,6 +10,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "categorie")
+@com.fasterxml.jackson.annotation.JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Categorie {
 
     @Id
