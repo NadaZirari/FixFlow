@@ -75,4 +75,9 @@ export class AuthService {
     this.currentUserSubject.next(null);
     this.router.navigate(['/']);
   }
+
+  updateUser(user: User): void {
+    localStorage.setItem('currentUser', JSON.stringify(user));
+    this.currentUserSubject.next(user);
+  }
 }

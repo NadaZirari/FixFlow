@@ -61,12 +61,12 @@ import { AuthService } from '../../services/auth.service';
         <!-- User Info & Logout -->
         <div class="px-4 py-4 border-t border-gray-200">
           <div *ngIf="authService.currentUser$ | async as user" class="flex items-center gap-3 mb-4">
-            <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-semibold">
-              {{ user.nom.charAt(0).toUpperCase() }}
+            <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-semibold shadow-inner">
+              {{ (user.prenom?.charAt(0) || user.nom.charAt(0)).toUpperCase() }}
             </div>
             <div class="flex-1 min-w-0">
-              <p class="text-sm font-medium text-gray-800 truncate">{{ user.nom }}</p>
-              <p class="text-xs text-gray-500 truncate">{{ user.email }}</p>
+              <p class="text-sm font-bold text-gray-800 truncate">{{ user.prenom }} {{ user.nom }}</p>
+              <p class="text-xs text-gray-500 truncate font-medium">{{ user.email }}</p>
             </div>
           </div>
           <button (click)="authService.logout()"

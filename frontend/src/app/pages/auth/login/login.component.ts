@@ -39,7 +39,6 @@ export class LoginComponent {
         }
       },
       error: (err) => {
-        console.error('DEBUG [Login]: Full error object:', err);
         const errorBody = err.error;
         const errorMsg = typeof errorBody === 'string' ? errorBody : errorBody?.error || '';
         

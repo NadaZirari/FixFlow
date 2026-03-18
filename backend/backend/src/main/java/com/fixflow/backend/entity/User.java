@@ -32,6 +32,10 @@ public class User implements UserDetails {
     @Size(max = 100, message = "Le nom ne doit pas dépasser 100 caractères")
     @Column(name = "nom", nullable = false)
     private String nom;
+
+    @Size(max = 100, message = "Le prénom ne doit pas dépasser 100 caractères")
+    @Column(name = "prenom")
+    private String prenom;
     
     @Email(message = "L'email doit être valide")
     @NotBlank(message = "L'email est obligatoire")
@@ -118,6 +122,9 @@ public class User implements UserDetails {
     
     public String getNom() { return nom; }
     public void setNom(String nom) { this.nom = nom; }
+
+    public String getPrenom() { return prenom; }
+    public void setPrenom(String prenom) { this.prenom = prenom; }
     
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }

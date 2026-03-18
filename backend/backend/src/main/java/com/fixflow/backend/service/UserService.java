@@ -59,6 +59,7 @@ public class UserService {
         User user = findById(id);
         
         user.setNom(userDetails.getNom());
+        user.setPrenom(userDetails.getPrenom());
         user.setEmail(userDetails.getEmail());
         
         if (userDetails.getRole() != null && userDetails.getRole().getNom() != null) {
@@ -70,13 +71,13 @@ public class UserService {
             user.setMotDePasse(passwordEncoder.encode(userDetails.getMotDePasse()));
         }
         
-        return userRepository.save(user);
+        return userRepository.saveAndFlush(user);
     }
     
     public User toggleStatus(Long id) {
         User user = findById(id);
         user.setEstActif(!user.getEstActif());
-        return userRepository.save(user);
+        return userRepository.saveAndFlush(user);
     }
     
     public void delete(Long id) {
