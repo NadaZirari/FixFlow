@@ -91,9 +91,24 @@ import { User } from '../../../models/user.model';
                   {{ user.estActif ? 'Actif' : 'Inactif' }}
                 </span>
               </td>
-              <td class="px-6 py-4">
+              <td class="px-6 py-4 flex items-center gap-3">
+                <button (click)="toggleStatus(user)"
+                  [class]="user.estActif ? 'text-amber-600 hover:text-amber-800' : 'text-green-600 hover:text-green-800'"
+                  class="text-sm font-bold flex items-center gap-1 transition-all">
+                  <svg *ngIf="user.estActif" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                  </svg>
+                  <svg *ngIf="!user.estActif" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                  </svg>
+                  {{ user.estActif ? 'Suspendre' : 'Réactiver' }}
+                </button>
+                <span class="text-gray-300">|</span>
                 <button (click)="deleteUser(user)"
-                  class="text-red-600 hover:text-red-800 text-sm font-medium">
+                  class="text-red-600 hover:text-red-800 text-sm font-bold flex items-center gap-1 transition-all">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
                   Supprimer
                 </button>
               </td>
@@ -180,6 +195,19 @@ export class AdminUsersComponent implements OnInit {
       this.userService.delete(user.id).subscribe({
         next: () => this.loadUsers(),
         error: (err) => console.error('Erreur suppression:', err)
+      });
+    }
+  }
+
+  toggleStatus(user: User): void {
+    const action = user.estActif ? 'suspendre' : 'réactiver';
+    if (confirm(`Voulez-vous ${action} l'utilisateur ${user.nom} ?`)) {
+      this.userService.toggleStatus(user.id).subscribe({
+        next: () => this.loadUsers(),
+        error: (err) => {
+          console.error(`Erreur lors de l'action ${action}:`, err);
+          alert(`Erreur lors de l'action ${action}.`);
+        }
       });
     }
   }

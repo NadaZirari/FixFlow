@@ -39,12 +39,20 @@ public class AuthenticationService {
     }
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getEmail(),
-                        request.getMotDePasse()
-                )
-        );
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            request.getEmail(),
+                            request.getMotDePasse()
+                    )
+            );
+        } catch (org.springframework.security.authentication.DisabledException e) {
+            System.out.println("DEBUG: AuthenticationService caught DisabledException for " + request.getEmail());
+            throw e;
+        } catch (org.springframework.security.authentication.BadCredentialsException e) {
+            System.out.println("DEBUG: AuthenticationService caught BadCredentialsException for " + request.getEmail());
+            throw e;
+        }
         var user = repository.findByEmail(request.getEmail())
                 .orElseThrow();
         var jwtToken = jwtService.generateToken(user);

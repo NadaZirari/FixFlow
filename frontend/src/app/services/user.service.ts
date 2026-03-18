@@ -43,4 +43,8 @@ export class UserService {
   delete(id: number): Observable<void> {
     return this.http.delete<void>(`${this.API}/${id}`, { headers: this.getHeaders() });
   }
+
+  toggleStatus(id: number): Observable<User> {
+    return this.http.patch<User>(`${this.API}/${id}/toggle-status`, {}, { headers: this.getHeaders() });
+  }
 }

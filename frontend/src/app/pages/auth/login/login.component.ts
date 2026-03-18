@@ -39,7 +39,15 @@ export class LoginComponent {
         }
       },
       error: (err) => {
-        this.error = 'Email ou mot de passe incorrect.';
+        console.error('DEBUG [Login]: Full error object:', err);
+        const errorBody = err.error;
+        const errorMsg = typeof errorBody === 'string' ? errorBody : errorBody?.error || '';
+        
+        if (err.status === 403 || errorMsg === 'ACCOUNT_DISABLED' || (typeof errorBody === 'object' && errorBody?.message?.includes('suspendu'))) {
+          this.error = 'Votre compte est suspendu. Veuillez contacter l\'administrateur.';
+        } else {
+          this.error = 'Email ou mot de passe incorrect.';
+        }
         this.loading = false;
       }
     });
