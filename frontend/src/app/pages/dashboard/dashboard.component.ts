@@ -48,7 +48,7 @@ import { Observable } from 'rxjs';
             <div *ngFor="let t of tickets.slice(0, 5)" class="p-6 flex items-center justify-between hover:bg-white/[0.02] transition-colors">
               <div class="flex flex-col gap-1">
                 <span class="text-white font-bold">{{ t.titre }}</span>
-                <span class="text-xs text-white/30">{{ t.dateCreation | date:'medium' }} • {{ t.categorie }}</span>
+                <span class="text-xs text-white/30">{{ t.dateCreation | date:'medium' }} • {{ t.categorieNom }}</span>
               </div>
               <div class="flex items-center gap-4">
                 <span class="px-3 py-1 rounded-full text-[0.65rem] font-bold border" 

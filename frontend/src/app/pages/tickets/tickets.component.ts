@@ -34,7 +34,7 @@ import { Observable } from 'rxjs';
                 <td class="px-8 py-6">
                   <div class="flex flex-col gap-1">
                     <span class="text-white font-bold group-hover:text-primary-light transition-colors">{{ t.titre }}</span>
-                    <span class="text-xs text-white/30">#{{ t.id }} • {{ t.categorie }}</span>
+                    <span class="text-xs text-white/30">#{{ t.id }} • {{ t.categorieNom }}</span>
                   </div>
                 </td>
                 <td class="px-8 py-6 text-center">

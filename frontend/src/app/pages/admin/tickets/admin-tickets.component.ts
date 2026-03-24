@@ -10,10 +10,27 @@ import { Ticket } from '../../../models/ticket.model';
   imports: [CommonModule, RouterModule],
   template: `
     <div class="p-8">
-      <div class="flex justify-between items-center mb-8">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
         <div>
           <h1 class="text-3xl font-extrabold text-gray-900 tracking-tight">Gestion des Tickets</h1>
           <p class="text-gray-500 mt-1">Supervisez et gérez toutes les demandes de support du système.</p>
+        </div>
+        <div class="flex items-center gap-4">
+          <div class="relative">
+            <select 
+              (change)="onFilterChange($event)"
+              class="appearance-none bg-white border border-gray-200 text-gray-700 py-2.5 px-4 pr-10 rounded-xl leading-tight focus:outline-none focus:bg-white focus:border-blue-500 transition-all font-semibold text-sm cursor-pointer shadow-sm"
+            >
+              <option value="ALL">Priorité: Toutes</option>
+              <option value="FAIBLE">🚀 Faible</option>
+              <option value="MOYENNE">⚡ Moyenne</option>
+              <option value="HAUTE">🔥 Haute</option>
+              <option value="CRITIQUE">🚨 Critique</option>
+            </select>
+            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-500">
+              <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.707 6.586 4.293 8l5 5z"/></svg>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -23,17 +40,17 @@ import { Ticket } from '../../../models/ticket.model';
           <p class="text-gray-500 font-medium">Chargement de tous les tickets...</p>
         </div>
 
-        <div *ngIf="!loading && tickets.length === 0" class="p-16 text-center">
+        <div *ngIf="!loading && filteredTickets.length === 0" class="p-16 text-center">
           <div class="bg-gray-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
             </svg>
           </div>
           <h3 class="text-xl font-bold text-gray-800 mb-2">Aucun ticket</h3>
-          <p class="text-gray-500 max-w-sm mx-auto">Aucun ticket n'a été créé pour le moment par les utilisateurs.</p>
+          <p class="text-gray-500 max-w-sm mx-auto">Aucun ticket ne correspond aux critères de sélection.</p>
         </div>
 
-        <table *ngIf="!loading && tickets.length > 0" class="w-full">
+        <table *ngIf="!loading && filteredTickets.length > 0" class="w-full">
           <thead>
             <tr class="bg-gray-50 border-b border-gray-100">
               <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Utilisateur</th>
@@ -44,7 +61,7 @@ import { Ticket } from '../../../models/ticket.model';
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-50">
-            <tr *ngFor="let ticket of tickets" class="hover:bg-gray-50/50 transition-colors">
+            <tr *ngFor="let ticket of filteredTickets" class="hover:bg-gray-50/50 transition-colors">
               <td class="px-6 py-5">
                 <div class="font-bold text-gray-900">{{ ticket.userNom }}</div>
                 <div class="text-xs text-gray-400 font-medium">{{ ticket.dateCreation | date:'dd/MM/yyyy HH:mm' }}</div>
@@ -93,7 +110,9 @@ import { Ticket } from '../../../models/ticket.model';
 })
 export class AdminTicketsComponent implements OnInit {
   tickets: Ticket[] = [];
+  filteredTickets: Ticket[] = [];
   loading = true;
+  selectedPriority = 'ALL';
 
   constructor(private ticketService: TicketService) {}
 
@@ -106,6 +125,7 @@ export class AdminTicketsComponent implements OnInit {
     this.ticketService.getAllTickets().subscribe({
       next: (res) => {
         this.tickets = res;
+        this.applyFilter();
         this.loading = false;
       },
       error: (err) => {
@@ -113,6 +133,19 @@ export class AdminTicketsComponent implements OnInit {
         this.loading = false;
       }
     });
+  }
+
+  onFilterChange(event: any): void {
+    this.selectedPriority = event.target.value;
+    this.applyFilter();
+  }
+
+  applyFilter(): void {
+    if (this.selectedPriority === 'ALL') {
+      this.filteredTickets = this.tickets;
+    } else {
+      this.filteredTickets = this.tickets.filter(t => t.priorite === this.selectedPriority);
+    }
   }
 
   getStatusClass(status: string): string {
