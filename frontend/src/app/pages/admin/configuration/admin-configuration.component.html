@@ -1,6 +1,97 @@
-<div class="p-8">
-      <h1 class="text-2xl font-bold text-gray-800 mb-6">Configuration</h1>
-      <div class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
-        <p class="text-gray-600">Parametres de configuration...</p>
+<div class="p-4 sm:p-8 max-w-7xl mx-auto min-h-screen">
+  <!-- Header -->
+  <header class="mb-10">
+    <div class="space-y-1">
+      <h1 class="text-3xl font-black text-gray-900 tracking-tight">Configuration</h1>
+      <p class="text-gray-500 font-medium">Gérez les paramètres de votre plateforme FixFlow.</p>
+    </div>
+  </header>
+
+  <!-- Category Management Section -->
+  <div class="bg-white rounded-[2.5rem] shadow-2xl shadow-gray-200 border border-gray-100 overflow-hidden">
+    <!-- Section Header -->
+    <div class="px-8 py-6 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div class="flex items-center gap-4">
+        <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+          </svg>
+        </div>
+        <div>
+          <h2 class="text-xl font-black text-gray-900 tracking-tight">Catégories de tickets</h2>
+          <p class="text-xs font-bold text-gray-400 uppercase tracking-widest">{{ categories.length }} catégorie(s) configurée(s)</p>
+        </div>
       </div>
     </div>
+
+    <!-- Add Category Form -->
+    <div class="px-8 py-6 bg-gray-50/50 border-b border-gray-100">
+      <form (ngSubmit)="addCategory()" class="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
+        <div class="flex-1 relative">
+          <input 
+            type="text" 
+            [(ngModel)]="newCategoryName"
+            name="categoryName"
+            placeholder="Nom de la nouvelle catégorie..."
+            class="w-full bg-white border-2 border-gray-100 text-gray-900 py-3.5 pl-5 pr-6 rounded-2xl font-bold text-sm shadow-sm hover:border-blue-300 focus:outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all placeholder:text-gray-300"
+            required
+          >
+        </div>
+        <button 
+          type="submit"
+          [disabled]="!newCategoryName.trim() || saving"
+          class="bg-gray-900 text-white px-8 py-3.5 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-black hover:shadow-2xl hover:shadow-gray-300 transition-all active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center gap-3 whitespace-nowrap">
+          <svg *ngIf="!saving" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+          </svg>
+          <div *ngIf="saving" class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+          Ajouter
+        </button>
+      </form>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="loading" class="p-20 text-center">
+      <div class="relative inline-block">
+        <div class="w-16 h-16 border-4 border-blue-100 border-t-blue-600 rounded-full animate-spin"></div>
+      </div>
+      <p class="mt-6 text-gray-400 font-bold uppercase tracking-widest text-xs">Chargement des catégories...</p>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!loading && categories.length === 0" class="p-24 text-center">
+      <div class="bg-gray-50 w-24 h-24 rounded-[2rem] flex items-center justify-center mx-auto mb-6 text-gray-300">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+        </svg>
+      </div>
+      <h3 class="text-2xl font-black text-gray-900 mb-2">Aucune catégorie</h3>
+      <p class="text-gray-400 font-medium max-w-xs mx-auto text-sm">Ajoutez votre première catégorie de tickets ci-dessus.</p>
+    </div>
+
+    <!-- Categories List -->
+    <div *ngIf="!loading && categories.length > 0" class="divide-y divide-gray-50">
+      <div *ngFor="let cat of categories; let i = index" 
+           class="px-8 py-5 flex items-center justify-between hover:bg-gray-50/50 transition-all group">
+        <div class="flex items-center gap-4">
+          <div class="w-10 h-10 rounded-xl flex items-center justify-center text-sm font-black shadow-sm"
+               [style.background-color]="getCategoryColor(i, true)"
+               [style.color]="getCategoryColor(i, false)">
+            {{ cat.nom.charAt(0).toUpperCase() }}
+          </div>
+          <div>
+            <span class="text-gray-900 font-black tracking-tight">{{ cat.nom }}</span>
+            <p *ngIf="cat.description" class="text-xs text-gray-400 font-medium mt-0.5">{{ cat.description }}</p>
+          </div>
+        </div>
+        <button 
+          (click)="deleteCategory(cat.id)"
+          class="opacity-0 group-hover:opacity-100 w-10 h-10 bg-red-50 text-red-500 rounded-xl flex items-center justify-center hover:bg-red-100 hover:text-red-600 transition-all active:scale-90">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

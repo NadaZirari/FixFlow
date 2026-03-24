@@ -65,6 +65,14 @@ export class TicketService {
     return this.http.get<Categorie[]>('http://localhost:8081/api/v1/categories');
   }
 
+  createCategory(categorie: { nom: string; description?: string }): Observable<Categorie> {
+    return this.http.post<Categorie>('http://localhost:8081/api/v1/categories', categorie);
+  }
+
+  deleteCategory(id: number): Observable<void> {
+    return this.http.delete<void>(`http://localhost:8081/api/v1/categories/${id}`);
+  }
+
   getComments(ticketId: number): Observable<Comment[]> {
     return this.http.get<Comment[]>(`http://localhost:8081/api/v1/commentaires/ticket/${ticketId}`);
   }
