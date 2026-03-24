@@ -40,10 +40,7 @@ public class RoleService {
     
     public Role update(Long id, Role roleDetails) {
         Role role = findById(id);
-        
         role.setNom(roleDetails.getNom());
-        role.setPermissions(roleDetails.getPermissions());
-        
         return roleRepository.save(role);
     }
     
