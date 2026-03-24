@@ -1,0 +1,157 @@
+<div class="p-4 sm:p-8 max-w-7xl mx-auto min-h-screen">
+      <!-- Premium Header Section -->
+      <header class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
+        <div class="space-y-1">
+          <h1 class="text-3xl font-black text-gray-900 tracking-tight">Utilisateurs</h1>
+          <p class="text-gray-500 font-medium">Gérez les accès et les permissions de tous vos collaborateurs.</p>
+        </div>
+        <button (click)="showForm = !showForm"
+          class="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-2xl transition-all shadow-lg shadow-blue-200 active:scale-95 group">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 transition-transform group-hover:rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" [attr.d]="showForm ? 'M6 18L18 6M6 6l12 12' : 'M12 4v16m8-8H4'" />
+          </svg>
+          {{ showForm ? 'Annuler' : 'Nouvel utilisateur' }}
+        </button>
+      </header>
+
+      <!-- Premium Form Card -->
+      <div *ngIf="showForm" class="bg-white rounded-[2rem] border border-gray-100 shadow-2xl p-8 mb-10 animate-in fade-in slide-in-from-top duration-500">
+        <div class="flex items-center gap-4 mb-8">
+          <div class="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+            </svg>
+          </div>
+          <h2 class="text-xl font-black text-gray-900">Enregistrer un nouveau membre</h2>
+        </div>
+
+        <div *ngIf="error" class="mb-8 p-4 rounded-2xl bg-red-50 border border-red-100 text-red-600 text-sm font-bold flex items-center gap-3">
+          <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" /></svg>
+          {{ error }}
+        </div>
+
+        <div *ngIf="success" class="mb-8 p-4 rounded-2xl bg-green-50 border border-green-100 text-green-600 text-sm font-bold flex items-center gap-3">
+          <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" /></svg>
+          {{ success }}
+        </div>
+
+        <form [formGroup]="form" (ngSubmit)="onSubmit()" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="space-y-2">
+            <label class="text-xs font-black text-gray-400 uppercase tracking-widest pl-1">Nom Complet</label>
+            <input type="text" formControlName="nom" placeholder="Jean Dupont"
+              class="w-full bg-gray-50 border-0 border-b-2 border-transparent focus:border-blue-500 rounded-2xl px-5 py-4 text-gray-800 font-bold outline-none transition-all focus:bg-white focus:ring-4 focus:ring-blue-100/50">
+          </div>
+
+          <div class="space-y-2">
+            <label class="text-xs font-black text-gray-400 uppercase tracking-widest pl-1">Adresse Email</label>
+            <input type="email" formControlName="email" placeholder="email@exemple.com" autocomplete="off"
+              class="w-full bg-gray-50 border-0 border-b-2 border-transparent focus:border-blue-500 rounded-2xl px-5 py-4 text-gray-800 font-bold outline-none transition-all focus:bg-white focus:ring-4 focus:ring-blue-100/50">
+          </div>
+
+          <div class="space-y-2">
+            <label class="text-xs font-black text-gray-400 uppercase tracking-widest pl-1">Mot de passe provisoire</label>
+            <input type="password" formControlName="motDePasse" placeholder="••••••••" autocomplete="new-password"
+              class="w-full bg-gray-50 border-0 border-b-2 border-transparent focus:border-blue-500 rounded-2xl px-5 py-4 text-gray-800 font-bold outline-none transition-all focus:bg-white focus:ring-4 focus:ring-blue-100/50">
+          </div>
+
+          <div class="md:col-span-3 pt-4">
+            <button type="submit" [disabled]="loading || form.invalid"
+              class="w-full md:w-auto bg-gray-900 border-2 border-gray-900 hover:bg-white hover:text-gray-900 text-white font-black px-10 py-4 rounded-2xl transition-all disabled:opacity-30 active:scale-95 shadow-lg shadow-gray-200">
+              {{ loading ? "Création en cours..." : "Créer l'utilisateur" }}
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Modern Users Table Section -->
+      <div class="bg-white rounded-[2.5rem] shadow-2xl shadow-gray-200 border border-gray-100 overflow-hidden">
+        <div *ngIf="loadingUsers" class="p-20 text-center">
+          <div class="relative inline-block">
+            <div class="w-16 h-16 border-4 border-blue-100 border-t-blue-600 rounded-full animate-spin"></div>
+            <div class="absolute inset-0 flex items-center justify-center">
+              <div class="w-2 h-2 bg-blue-600 rounded-full animate-ping"></div>
+            </div>
+          </div>
+          <p class="mt-6 text-gray-400 font-bold uppercase tracking-widest text-xs">Initialisation des données...</p>
+        </div>
+
+        <div class="overflow-x-auto" *ngIf="!loadingUsers">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="bg-gray-50/50 border-b border-gray-50">
+                <th class="px-8 py-6 text-xs font-black text-gray-400 uppercase tracking-widest">Membre</th>
+                <th class="px-8 py-6 text-xs font-black text-gray-400 uppercase tracking-widest">Role</th>
+                <th class="px-8 py-6 text-xs font-black text-gray-400 uppercase tracking-widest text-center">Statut</th>
+                <th class="px-8 py-6 text-xs font-black text-gray-400 uppercase tracking-widest text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-50">
+              <tr *ngFor="let user of users" class="group hover:bg-blue-50/30 transition-all duration-300">
+                <td class="px-8 py-6">
+                  <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-sm font-black shadow-inner"
+                         [style.background-color]="getAvatarBg(user.nom)"
+                         [style.color]="getAvatarColor(user.nom)">
+                      {{ getInitials(user.nom) }}
+                    </div>
+                    <div class="flex flex-col">
+                      <span class="text-gray-900 font-black tracking-tight group-hover:text-blue-600 transition-colors">{{ user.nom }}</span>
+                      <span class="text-gray-400 text-xs font-medium">{{ user.email }}</span>
+                    </div>
+                  </div>
+                </td>
+                <td class="px-8 py-6">
+                  <div class="flex">
+                    <span [ngClass]="user.role.nom === 'ADMIN' ? 'bg-indigo-50 text-indigo-700 border-indigo-100' : 'bg-blue-50 text-blue-700 border-blue-100'"
+                      class="px-3 py-1 text-[0.65rem] font-black rounded-lg border uppercase tracking-widest">
+                      {{ user.role.nom }}
+                    </span>
+                  </div>
+                </td>
+                <td class="px-8 py-6 text-center">
+                  <div class="flex items-center justify-center gap-2">
+                    <div class="w-2 h-2 rounded-full" [ngClass]="user.estActif ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' : 'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)]'"></div>
+                    <span [ngClass]="user.estActif ? 'text-emerald-700' : 'text-red-700'" class="text-[0.65rem] font-black uppercase tracking-widest">
+                      {{ user.estActif ? 'Actif' : 'Suspendu' }}
+                    </span>
+                  </div>
+                </td>
+                <td class="px-8 py-6">
+                  <div class="flex items-center justify-end gap-2">
+                    <button (click)="toggleStatus(user)"
+                      class="p-2.5 rounded-xl transition-all active:scale-90 group"
+                      [ngClass]="user.estActif ? 'bg-amber-50 text-amber-600 hover:bg-amber-100' : 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100'"
+                      [title]="user.estActif ? 'Suspendre' : 'Réactiver'">
+                      <svg *ngIf="user.estActif" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                      </svg>
+                      <svg *ngIf="!user.estActif" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z" />
+                      </svg>
+                    </button>
+                    <button (click)="deleteUser(user)"
+                      class="p-2.5 bg-red-50 text-red-600 hover:bg-red-100 rounded-xl transition-all active:scale-90"
+                      title="Supprimer définitivement">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+              <tr *ngIf="users.length === 0">
+                <td colspan="4" class="px-8 py-24 text-center">
+                  <div class="bg-gray-50 w-24 h-24 rounded-[2rem] flex items-center justify-center mx-auto mb-6 text-gray-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                  </div>
+                  <h3 class="text-xl font-black text-gray-900 mb-2">Aucun collaborateur trouvé</h3>
+                  <p class="text-gray-400 font-medium max-w-xs mx-auto text-sm">Votre équipe semble vide. Commencez par ajouter votre premier membre.</p>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
