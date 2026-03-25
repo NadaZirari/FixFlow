@@ -55,7 +55,7 @@ Fixflow-FileRouge/
 - **ADMIN** — Administrateur (gérer tous les tickets, utilisateurs, catégories)
 
 ### Statuts de ticket
-`OUVERT` → `EN_COURS` → `RESOLU` → `ARCHIVE`
+`OUVERT` → `EN_COURS` → `RESOLU`
 
 ### Niveaux de priorité
 `FAIBLE` | `MOYENNE` | `HAUTE` | `CRITIQUE`
@@ -94,7 +94,6 @@ L'API est documentée via **Swagger UI** :
 
 | Méthode | Endpoint | Description | Accès |
 |---|---|---|---|
-| `POST` | `/api/v1/auth/register` | Inscription | Public |
 | `POST` | `/api/v1/auth/login` | Connexion | Public |
 | `GET` | `/api/v1/tickets` | Liste tous les tickets | Admin |
 | `GET` | `/api/v1/tickets/my` | Mes tickets | Authentifié |
