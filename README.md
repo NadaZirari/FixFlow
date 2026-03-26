@@ -47,7 +47,7 @@ Fixflow-FileRouge/
 | Outil | Usage |
 |---|---|
 | Docker Compose | Orchestration multi-container |
-| PostgreSQL (Alpine) | Base de données conteneurisée |
+| PostgreSQL  | Base de données|
 
 
 ### Rôles disponibles
@@ -89,24 +89,6 @@ npm start
 
 L'API est documentée via **Swagger UI** :  
 🔗 **http://localhost:8081/swagger-ui.html**
-
-### Endpoints principaux
-
-| Méthode | Endpoint | Description | Accès |
-|---|---|---|---|
-| `POST` | `/api/v1/auth/login` | Connexion | Public |
-| `GET` | `/api/v1/tickets` | Liste tous les tickets | Admin |
-| `GET` | `/api/v1/tickets/my` | Mes tickets | Authentifié |
-| `POST` | `/api/v1/tickets` | Créer un ticket | Authentifié |
-| `PUT` | `/api/v1/tickets/{id}/status` | Changer le statut | Admin |
-| `GET` | `/api/v1/categories` | Lister les catégories | Public |
-| `POST` | `/api/v1/categories` | Créer une catégorie | Admin |
-| `DELETE` | `/api/v1/categories/{id}` | Supprimer une catégorie | Admin |
-| `GET` | `/api/v1/users` | Lister les utilisateurs | Admin |
-| `GET` | `/api/v1/commentaires/ticket/{id}` | Commentaires d'un ticket | Authentifié |
-| `POST` | `/api/v1/commentaires/ticket/{id}` | Ajouter un commentaire | Authentifié |
-
----
 
 
 
