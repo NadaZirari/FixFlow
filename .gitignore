@@ -1,0 +1,17 @@
+# IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Build outputs
+.dist/
+dist/
+target/
+bin/
+node_modules/
+
+# Files
+.env
+uploads/
+docker_error.txt
