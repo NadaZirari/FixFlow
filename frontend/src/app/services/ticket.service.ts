@@ -22,7 +22,7 @@ export interface Comment {
   providedIn: 'root'
 })
 export class TicketService {
-  private API = 'http://localhost:8081/api/v1/tickets';
+  private API = '/api/v1/tickets';
 
   constructor(private http: HttpClient) {}
 
@@ -62,22 +62,22 @@ export class TicketService {
   }
 
   getCategories(): Observable<Categorie[]> {
-    return this.http.get<Categorie[]>('http://localhost:8081/api/v1/categories');
+    return this.http.get<Categorie[]>('/api/v1/categories');
   }
 
   createCategory(categorie: { nom: string; description?: string }): Observable<Categorie> {
-    return this.http.post<Categorie>('http://localhost:8081/api/v1/categories', categorie);
+    return this.http.post<Categorie>('/api/v1/categories', categorie);
   }
 
   deleteCategory(id: number): Observable<void> {
-    return this.http.delete<void>(`http://localhost:8081/api/v1/categories/${id}`);
+    return this.http.delete<void>(`/api/v1/categories/${id}`);
   }
 
   getComments(ticketId: number): Observable<Comment[]> {
-    return this.http.get<Comment[]>(`http://localhost:8081/api/v1/commentaires/ticket/${ticketId}`);
+    return this.http.get<Comment[]>(`/api/v1/commentaires/ticket/${ticketId}`);
   }
 
   addComment(ticketId: number, content: string): Observable<Comment> {
-    return this.http.post<Comment>(`http://localhost:8081/api/v1/commentaires/ticket/${ticketId}`, { contenu: content });
+    return this.http.post<Comment>(`/api/v1/commentaires/ticket/${ticketId}`, { contenu: content });
   }
 }

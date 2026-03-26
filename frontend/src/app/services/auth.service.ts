@@ -6,7 +6,7 @@ import { AuthRequest, AuthResponse, RegisterRequest, User } from '../models/user
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private readonly API = 'http://localhost:8081/api/v1/auth';
+  private readonly API = '/api/v1/auth';
   private currentUserSubject = new BehaviorSubject<User | null>(this.loadUser());
   currentUser$ = this.currentUserSubject.asObservable();
 

@@ -64,7 +64,8 @@
               "buildTarget": "fixflow-frontend:build:production"
             },
             "development": {
-              "buildTarget": "fixflow-frontend:build:development"
+              "buildTarget": "fixflow-frontend:build:development",
+              "proxyConfig": "src/proxy.conf.json"
             }
           },
           "defaultConfiguration": "development"

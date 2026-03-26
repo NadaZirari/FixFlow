@@ -163,7 +163,7 @@
                     <div class="flex items-center gap-2">
                       <span class="text-gray-900 font-black tracking-tight line-clamp-1">{{ ticket.titre }}</span>
                       <a *ngIf="ticket.cheminFichier" 
-                        [href]="'http://localhost:8081/uploads/' + ticket.cheminFichier" 
+                      [href]="'/uploads/' + ticket.cheminFichier" 
                         target="_blank"
                         class="p-1 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-600 hover:text-white transition-all active:scale-90"
                         title="Voir la pièce jointe">
