@@ -2,7 +2,6 @@ package com.fixflow.backend.service;
 
 import com.fixflow.backend.dto.AuthenticationRequest;
 import com.fixflow.backend.dto.AuthenticationResponse;
-import com.fixflow.backend.dto.RegisterRequest;
 import com.fixflow.backend.entity.User;
 import com.fixflow.backend.repository.UserRepository;
 import com.fixflow.backend.security.JwtService;
@@ -21,22 +20,6 @@ public class AuthenticationService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     private final RoleService roleService;
-
-    public AuthenticationResponse register(RegisterRequest request) {
-        var user = new User(
-                request.getNom(),
-                request.getEmail(),
-                passwordEncoder.encode(request.getMotDePasse())
-        );
-        user.setRole(roleService.findByNom("USER"));
-        user.setEstActif(true);
-        repository.save(user);
-        var jwtToken = jwtService.generateToken(user);
-        return AuthenticationResponse.builder()
-                .token(jwtToken)
-                .user(user)
-                .build();
-    }
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
         try {

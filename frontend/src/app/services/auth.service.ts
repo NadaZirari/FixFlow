@@ -57,18 +57,6 @@ export class AuthService {
     );
   }
 
-  register(req: RegisterRequest): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.API}/register`, req).pipe(
-      tap(res => {
-        if (res.token && res.user) {
-          localStorage.setItem('token', res.token);
-          localStorage.setItem('currentUser', JSON.stringify(res.user));
-          this.currentUserSubject.next(res.user);
-        }
-      })
-    );
-  }
-
   logout(): void {
     localStorage.removeItem('token');
     localStorage.removeItem('currentUser');

@@ -2,7 +2,6 @@ package com.fixflow.backend.controller;
 
 import com.fixflow.backend.dto.AuthenticationRequest;
 import com.fixflow.backend.dto.AuthenticationResponse;
-import com.fixflow.backend.dto.RegisterRequest;
 import com.fixflow.backend.service.AuthenticationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,13 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthenticationController {
 
     private final AuthenticationService service;
-
-    @PostMapping("/register")
-    public ResponseEntity<AuthenticationResponse> register(
-            @RequestBody RegisterRequest request
-    ) {
-        return ResponseEntity.ok(service.register(request));
-    }
 
     @PostMapping("/authenticate")
     public ResponseEntity<AuthenticationResponse> authenticate(
