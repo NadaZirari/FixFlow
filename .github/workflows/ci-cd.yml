@@ -6,6 +6,9 @@ on:
   pull_request:
     branches: [ "main", "master" ]
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   backend-build:
     runs-on: ubuntu-latest
@@ -18,7 +21,7 @@ jobs:
         distribution: 'temurin'
         cache: maven
     - name: Build with Maven
-      run: mvn -f backend/backend/pom.xml clean package -DskipTests
+      run: mvn -f backend/pom.xml clean package -DskipTests
 
   frontend-build:
     runs-on: ubuntu-latest
@@ -50,7 +53,7 @@ jobs:
     #     password: ${{ secrets.DOCKER_PASSWORD }}
     
     - name: Build and tag Backend
-      run: docker build -t fixflow-backend ./backend/backend
+      run: docker build -t fixflow-backend ./backend
       
     - name: Build and tag Frontend
       run: docker build -t fixflow-frontend ./frontend
