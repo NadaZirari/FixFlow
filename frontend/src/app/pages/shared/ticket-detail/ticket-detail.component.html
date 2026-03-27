@@ -8,12 +8,26 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
           </button>
-          <div>
-            <div class="flex items-center gap-3 mb-1">
-              <span class="text-xs font-black text-blue-600 bg-blue-50 px-3 py-1 rounded-lg uppercase tracking-widest">Ticket #{{ ticketId }}</span>
-              <span class="text-gray-400 font-bold text-xs uppercase tracking-widest">{{ ticket?.dateCreation | date:'dd MMMM yyyy' }}</span>
+          <div class="w-full">
+            <div class="flex items-center justify-between w-full">
+              <div class="flex items-center gap-3 mb-1">
+                <span class="text-xs font-black text-blue-600 bg-blue-50 px-3 py-1 rounded-lg uppercase tracking-widest">Ticket #{{ ticketId }}</span>
+                <span class="text-gray-400 font-bold text-xs uppercase tracking-widest">{{ ticket?.dateCreation | date:'dd MMMM yyyy' }}</span>
+              </div>
+              <button *ngIf="ticket && isCurrentUser(ticket.userNom) && !isEditing && ticket.statut !== 'RESOLU' && ticket.statut !== 'ARCHIVE'" (click)="startEdit()" class="ml-4 text-xs font-bold text-gray-500 hover:text-blue-600 bg-white hover:bg-blue-50 px-4 py-2 rounded-xl transition-colors flex items-center gap-2 border border-gray-100 shadow-sm active:scale-95">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                </svg>
+                Éditer
+              </button>
             </div>
-            <h1 class="text-3xl font-black text-gray-900 tracking-tight leading-none">{{ ticket?.titre || 'Chargement...' }}</h1>
+            
+            <ng-container *ngIf="!isEditing">
+              <h1 class="text-3xl font-black text-gray-900 tracking-tight leading-none">{{ ticket?.titre || 'Chargement...' }}</h1>
+            </ng-container>
+            <ng-container *ngIf="isEditing">
+              <input type="text" [(ngModel)]="editForm.titre" [disabled]="savingEdit" class="text-3xl font-black text-gray-900 tracking-tight leading-none w-full bg-white border-2 border-blue-200 rounded-xl px-4 py-3 mt-2 shadow-inner focus:ring-4 focus:ring-blue-100/50 outline-none transition-all" placeholder="Titre du ticket">
+            </ng-container>
           </div>
         </div>
         
@@ -46,9 +60,24 @@
               </div>
 
               <div class="prose max-w-none">
-                <p class="text-gray-600 leading-relaxed text-lg whitespace-pre-wrap font-medium">
-                  {{ ticket?.description }}
-                </p>
+                <ng-container *ngIf="!isEditing">
+                  <p class="text-gray-600 leading-relaxed text-lg whitespace-pre-wrap font-medium">
+                    {{ ticket?.description }}
+                  </p>
+                </ng-container>
+                <ng-container *ngIf="isEditing">
+                  <textarea [(ngModel)]="editForm.description" [disabled]="savingEdit" rows="5" class="w-full bg-white border-2 border-blue-200 rounded-2xl p-5 text-gray-700 leading-relaxed text-lg font-medium shadow-inner focus:ring-4 focus:ring-blue-100/50 outline-none transition-all resize-y mt-2" placeholder="Description du problème..."></textarea>
+                  
+                  <div class="flex items-center gap-3 mt-6 justify-end">
+                    <button (click)="cancelEdit()" [disabled]="savingEdit" class="px-6 py-3 text-sm font-black text-gray-500 bg-gray-50 hover:bg-gray-100 rounded-xl transition-colors disabled:opacity-50">
+                      Annuler
+                    </button>
+                    <button (click)="saveEdit()" [disabled]="savingEdit || !editForm.titre || !editForm.description" class="px-6 py-3 text-sm font-black text-white bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-200 rounded-xl transition-all disabled:opacity-50 flex items-center gap-2">
+                      <svg *ngIf="savingEdit" class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                      Enregistrer
+                    </button>
+                  </div>
+                </ng-container>
               </div>
 
               <!-- Attachment Preview -->
@@ -190,7 +219,25 @@
             <div class="space-y-6">
               <div class="flex flex-col gap-1 px-2">
                 <span class="text-[0.65rem] font-black text-gray-400 uppercase tracking-widest">Catégorie</span>
-                <span class="text-gray-900 font-black tracking-tight">{{ ticket?.categorieNom || 'Aucune' }}</span>
+                <ng-container *ngIf="!isEditing">
+                  <span class="text-gray-900 font-black tracking-tight">{{ ticket?.categorieNom || 'Aucune' }}</span>
+                </ng-container>
+                <ng-container *ngIf="isEditing">
+                  <select [(ngModel)]="editForm.categorieId" [disabled]="savingEdit" class="w-full bg-white border-2 border-blue-200 text-gray-900 rounded-lg px-3 py-2 text-sm font-black focus:ring-4 focus:ring-blue-100/50 outline-none transition-all shadow-sm">
+                    <option [ngValue]="null">Choix Catégorie</option>
+                    <option *ngFor="let cat of categories" [value]="cat.id">{{ cat.nom }}</option>
+                  </select>
+                </ng-container>
+              </div>
+
+              <div class="flex flex-col gap-1 px-2" *ngIf="isEditing">
+                <span class="text-[0.65rem] font-black text-gray-400 uppercase tracking-widest">Priorité</span>
+                <select [(ngModel)]="editForm.priorite" [disabled]="savingEdit" class="w-full bg-white border-2 border-blue-200 text-gray-900 rounded-lg px-3 py-2 text-sm font-black focus:ring-4 focus:ring-blue-100/50 outline-none transition-all shadow-sm">
+                  <option value="FAIBLE">FAIBLE</option>
+                  <option value="MOYENNE">MOYENNE</option>
+                  <option value="HAUTE">HAUTE</option>
+                  <option value="CRITIQUE">CRITIQUE</option>
+                </select>
               </div>
 
               <div class="flex flex-col gap-1 px-2">

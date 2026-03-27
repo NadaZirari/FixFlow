@@ -52,7 +52,7 @@ public class TicketController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
+    @PreAuthorize("hasAuthority('ROLE_USER') and @ticketService.findById(#id).user.email == authentication.principal.username")
     public ResponseEntity<TicketResponse> updateTicket(
             @PathVariable Long id,
             @RequestBody TicketRequest request

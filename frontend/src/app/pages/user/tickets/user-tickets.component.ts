@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { TicketService } from '../../../services/ticket.service';
 import { Ticket } from '../../../models/ticket.model';
@@ -19,7 +19,13 @@ export class UserTicketsComponent implements OnInit {
   searchQuery = '';
   selectedStatus = 'ALL';
 
-  constructor(private ticketService: TicketService) {}
+  constructor(private ticketService: TicketService, private router: Router) {}
+
+  navigateToEdit(id?: number): void {
+    if (id) {
+      this.router.navigate(['/user/tickets', id], { queryParams: { edit: 'true' } });
+    }
+  }
 
   ngOnInit(): void {
     this.loadTickets();

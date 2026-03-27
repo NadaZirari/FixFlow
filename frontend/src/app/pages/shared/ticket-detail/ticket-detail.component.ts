@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { TicketService, Comment } from '../../../services/ticket.service';
+import { TicketService, Comment, Categorie } from '../../../services/ticket.service';
 import { Ticket } from '../../../models/ticket.model';
 import { AuthService } from '../../../services/auth.service';
 
@@ -20,6 +20,12 @@ export class TicketDetailComponent implements OnInit {
   isAdmin = false;
   ticketId: number = 0;
 
+  isEditing = false;
+  autoStartEdit = false;
+  editForm: Partial<Ticket> = {};
+  savingEdit = false;
+  categories: Categorie[] = [];
+
   constructor(
     private route: ActivatedRoute,
     private ticketService: TicketService,
@@ -29,6 +35,13 @@ export class TicketDetailComponent implements OnInit {
 
   ngOnInit(): void {
     this.isAdmin = this.authService.currentUser?.role?.nom === 'ADMIN';
+    
+    this.route.queryParams.subscribe(qParams => {
+      if (qParams['edit'] === 'true') {
+        this.autoStartEdit = true;
+      }
+    });
+
     this.route.params.subscribe(params => {
       this.ticketId = +params['id'];
       this.loadData();
@@ -74,7 +87,13 @@ export class TicketDetailComponent implements OnInit {
 
   loadData(): void {
     this.ticketService.getById(this.ticketId).subscribe({
-      next: (t) => this.ticket = t,
+      next: (t) => {
+        this.ticket = t;
+        if (this.autoStartEdit && this.ticket && this.isCurrentUser(this.ticket.userNom)) {
+          setTimeout(() => this.startEdit(), 0);
+          this.autoStartEdit = false;
+        }
+      },
       error: (err) => console.error('Erreur chargement ticket:', err)
     });
 
@@ -140,6 +159,57 @@ export class TicketDetailComponent implements OnInit {
   isImage(filename: string): boolean {
     const ext = filename.split('.').pop()?.toLowerCase();
     return ['png', 'jpg', 'jpeg', 'gif', 'webp'].includes(ext || '');
+  }
+
+  loadCategories(): void {
+    if (this.categories.length === 0) {
+      this.ticketService.getCategories().subscribe({
+        next: (cats) => this.categories = cats,
+        error: (err) => console.error('Erreur chargement categories:', err)
+      });
+    }
+  }
+
+  startEdit(): void {
+    if (this.ticket && this.ticket.statut !== 'RESOLU' && this.ticket.statut !== 'ARCHIVE') {
+      this.isEditing = true;
+      this.editForm = { 
+        titre: this.ticket.titre, 
+        description: this.ticket.description, 
+        priorite: this.ticket.priorite,
+        categorieId: this.ticket.categorieId 
+      };
+      this.loadCategories();
+    }
+  }
+
+  cancelEdit(): void {
+    this.isEditing = false;
+    this.editForm = {};
+  }
+
+  saveEdit(): void {
+    if (!this.ticket || !this.editForm.titre || !this.editForm.description) return;
+    this.savingEdit = true;
+    
+    const req: any = {
+      titre: this.editForm.titre,
+      description: this.editForm.description,
+      priorite: this.editForm.priorite,
+      categorieId: this.editForm.categorieId
+    };
+
+    this.ticketService.updateTicket(this.ticket.id!, req).subscribe({
+      next: (t) => {
+        this.ticket = { ...this.ticket, ...t };
+        this.isEditing = false;
+        this.savingEdit = false;
+      },
+      error: (err) => {
+        console.error('Erreur update ticket:', err);
+        this.savingEdit = false;
+      }
+    });
   }
 
   openImage(url: string): void {
