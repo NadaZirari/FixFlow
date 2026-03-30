@@ -2,6 +2,8 @@ package com.fixflow.backend.service;
 
 import com.fixflow.backend.dto.TicketRequest;
 import com.fixflow.backend.dto.TicketResponse;
+import com.fixflow.backend.dto.UserTicketStatsDto;
+import com.fixflow.backend.dto.UserDto;
 import com.fixflow.backend.entity.Ticket;
 import com.fixflow.backend.entity.User;
 import com.fixflow.backend.enums.StatutTicket;
@@ -11,6 +13,7 @@ import com.fixflow.backend.repository.TicketRepository;
 import com.fixflow.backend.repository.UserRepository;
 import com.fixflow.backend.service.interfaces.ITicketService;
 import com.fixflow.backend.mapper.TicketMapper;
+import com.fixflow.backend.mapper.UserMapper;
 import com.fixflow.backend.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
