@@ -12,7 +12,7 @@ export interface CreateUserRequest {
 
 @Injectable({ providedIn: 'root' })
 export class UserService {
-  private readonly API = '/api/v1/users';
+  private readonly API = 'http://localhost:8081/api/v1/users';
 
   constructor(private http: HttpClient) {}
 

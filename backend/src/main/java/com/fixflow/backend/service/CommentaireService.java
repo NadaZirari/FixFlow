@@ -7,6 +7,7 @@ import com.fixflow.backend.entity.Ticket;
 import com.fixflow.backend.entity.User;
 
 import com.fixflow.backend.repository.CommentaireRepository;
+import com.fixflow.backend.service.interfaces.ICommentaireService;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,7 +17,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
-public class  CommentaireService {
+public class  CommentaireService  implements ICommentaireService {
     
     private final CommentaireRepository commentaireRepository;
     private final TicketService ticketService;

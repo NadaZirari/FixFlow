@@ -2,6 +2,7 @@ package com.fixflow.backend.service;
 
 import com.fixflow.backend.entity.Categorie;
 import com.fixflow.backend.repository.CategorieRepository;
+import com.fixflow.backend.service.interfaces.ICategorieService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -9,7 +10,7 @@ import java.util.List;
 
 @Service
 @Transactional
-public class CategorieService {
+public class CategorieService implements ICategorieService {
 
     private final CategorieRepository categorieRepository;
 

@@ -9,6 +9,7 @@ import com.fixflow.backend.entity.Categorie;
 import com.fixflow.backend.repository.CategorieRepository;
 import com.fixflow.backend.repository.TicketRepository;
 import com.fixflow.backend.repository.UserRepository;
+import com.fixflow.backend.service.interfaces.ITicketService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -27,7 +28,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class TicketService {
+public class TicketService implements ITicketService {
 
     private final TicketRepository ticketRepository;
     private final UserRepository userRepository;

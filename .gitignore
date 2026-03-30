@@ -13,5 +13,7 @@ node_modules/
 
 # Files
 .env
+.env.local
+application-local.properties
 uploads/
 docker_error.txt

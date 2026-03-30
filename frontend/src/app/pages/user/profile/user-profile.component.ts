@@ -58,7 +58,15 @@ export class UserProfileComponent implements OnInit {
       next: (updatedUser) => {
         this.loading = false;
         this.success = 'Profil mis à jour avec succès !';
-        this.authService.updateUser(updatedUser);
+        // Mettre à jour l'utilisateur dans le localStorage
+        const currentUser = this.authService.currentUser;
+        if (currentUser) {
+          const mergedUser = { ...currentUser, ...updatedUser };
+          localStorage.setItem('currentUser', JSON.stringify(mergedUser));
+          // Forcer la mise à jour du BehaviorSubject
+          const event = new Event('user-updated');
+          window.dispatchEvent(event);
+        }
         setTimeout(() => this.success = '', 3000);
       },
       error: (err) => {

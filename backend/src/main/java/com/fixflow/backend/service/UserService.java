@@ -4,6 +4,7 @@ import com.fixflow.backend.entity.User;
 import com.fixflow.backend.entity.Role;
 import com.fixflow.backend.repository.UserRepository;
 import com.fixflow.backend.service.RoleService;
+import com.fixflow.backend.service.interfaces.IUserService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,7 +13,7 @@ import java.util.List;
 
 @Service
 @Transactional
-public class UserService {
+public class UserService implements IUserService {
     
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
