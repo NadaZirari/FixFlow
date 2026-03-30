@@ -10,6 +10,8 @@ import com.fixflow.backend.repository.CategorieRepository;
 import com.fixflow.backend.repository.TicketRepository;
 import com.fixflow.backend.repository.UserRepository;
 import com.fixflow.backend.service.interfaces.ITicketService;
+import com.fixflow.backend.mapper.TicketMapper;
+import com.fixflow.backend.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -33,31 +35,32 @@ public class TicketService implements ITicketService {
     private final TicketRepository ticketRepository;
     private final UserRepository userRepository;
     private final CategorieRepository categorieRepository;
+    private final TicketMapper ticketMapper;
 
     @Value("${file.upload-dir:uploads}")
     private String uploadDir;
 
     public Ticket findById(Long id) {
         return ticketRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Ticket non trouvé avec l'ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Ticket", id));
     }
 
     public TicketResponse getTicketResponseById(Long id) {
-        return mapToResponse(findById(id));
+        return ticketMapper.toResponse(findById(id));
     }
 
     @Transactional
     public TicketResponse createTicket(TicketRequest request, MultipartFile file) {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
+                .orElseThrow(() -> new ResourceNotFoundException("Utilisateur", "email", email));
 
-        Ticket ticket = new Ticket(request.getTitre(), request.getDescription(), user);
-        ticket.setPriorite(request.getPriorite());
+        Ticket ticket = ticketMapper.toEntity(request);
+        ticket.setUser(user);
         
         if (request.getCategorieId() != null) {
             Categorie categorie = categorieRepository.findById(request.getCategorieId())
-                    .orElseThrow(() -> new RuntimeException("Catégorie non trouvée"));
+                    .orElseThrow(() -> new ResourceNotFoundException("Catégorie", request.getCategorieId()));
             ticket.setCategorie(categorie);
         }
 
@@ -67,22 +70,22 @@ public class TicketService implements ITicketService {
         }
         
         Ticket savedTicket = ticketRepository.save(ticket);
-        return mapToResponse(savedTicket);
+        return ticketMapper.toResponse(savedTicket);
     }
 
     public List<TicketResponse> getMyTickets() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
+                .orElseThrow(() -> new ResourceNotFoundException("Utilisateur", "email", email));
         
         return ticketRepository.findByUser(user).stream()
-                .map(this::mapToResponse)
+                .map(ticketMapper::toResponse)
                 .collect(Collectors.toList());
     }
 
     public List<TicketResponse> getAllTickets() {
         return ticketRepository.findAll().stream()
-                .map(this::mapToResponse)
+                .map(ticketMapper::toResponse)
                 .collect(Collectors.toList());
     }
 
@@ -90,7 +93,7 @@ public class TicketService implements ITicketService {
     @Transactional
     public TicketResponse updateTicket(Long id, TicketRequest request) {
         Ticket ticket = ticketRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Ticket non trouvé"));
+                .orElseThrow(() -> new ResourceNotFoundException("Ticket", id));
         
         ticket.setTitre(request.getTitre());
         ticket.setDescription(request.getDescription());
@@ -98,17 +101,17 @@ public class TicketService implements ITicketService {
         
         if (request.getCategorieId() != null) {
             Categorie categorie = categorieRepository.findById(request.getCategorieId())
-                    .orElseThrow(() -> new RuntimeException("Catégorie non trouvée"));
+                    .orElseThrow(() -> new ResourceNotFoundException("Catégorie", request.getCategorieId()));
             ticket.setCategorie(categorie);
         }
         
-        return mapToResponse(ticketRepository.save(ticket));
+        return ticketMapper.toResponse(ticketRepository.save(ticket));
     }
 
     @Transactional
     public TicketResponse updateStatus(Long ticketId, StatutTicket statut) {
         Ticket ticket = ticketRepository.findById(ticketId)
-                .orElseThrow(() -> new RuntimeException("Ticket non trouvé"));
+                .orElseThrow(() -> new ResourceNotFoundException("Ticket", ticketId));
         
         ticket.setStatut(statut);
         if (statut == StatutTicket.RESOLU) {
@@ -120,23 +123,10 @@ public class TicketService implements ITicketService {
         Ticket savedTicket = ticketRepository.save(ticket);
 
 
-        return mapToResponse(savedTicket);
+        return ticketMapper.toResponse(savedTicket);
     }
 
-    private TicketResponse mapToResponse(Ticket ticket) {
-        return TicketResponse.builder()
-                .id(ticket.getId())
-                .titre(ticket.getTitre())
-                .description(ticket.getDescription())
-                .statut(ticket.getStatut())
-                .priorite(ticket.getPriorite())
-                .categorieNom(ticket.getCategorie() != null ? ticket.getCategorie().getNom() : null)
-                .categorieId(ticket.getCategorie() != null ? ticket.getCategorie().getId() : null)
-                .cheminFichier(ticket.getCheminFichier())
-                .dateCreation(ticket.getDateCreation())
-                .userNom(ticket.getUser().getNom())
-                .build();
-    }
+
 
     private String storeFile(MultipartFile file) {
         try {

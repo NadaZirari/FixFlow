@@ -2,6 +2,8 @@ package com.fixflow.backend.service;
 
 import com.fixflow.backend.entity.Role;
 import com.fixflow.backend.repository.RoleRepository;
+import com.fixflow.backend.exception.ResourceNotFoundException;
+import com.fixflow.backend.exception.DuplicateResourceException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,17 +25,17 @@ public class RoleService {
     
     public Role findById(Long id) {
         return roleRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Rôle non trouvé avec l'ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Rôle", id));
     }
     
     public Role findByNom(String nom) {
         return roleRepository.findByNom(nom)
-                .orElseThrow(() -> new RuntimeException("Rôle non trouvé avec le nom: " + nom));
+                .orElseThrow(() -> new ResourceNotFoundException("Rôle", "nom", nom));
     }
     
     public Role create(Role role) {
         if (roleRepository.existsByNom(role.getNom())) {
-            throw new RuntimeException("Rôle avec ce nom existe déjà: " + role.getNom());
+            throw new DuplicateResourceException("Rôle", "nom", role.getNom());
         }
         return roleRepository.save(role);
     }

@@ -3,6 +3,10 @@ package com.fixflow.backend.service;
 import com.fixflow.backend.entity.Categorie;
 import com.fixflow.backend.repository.CategorieRepository;
 import com.fixflow.backend.service.interfaces.ICategorieService;
+import com.fixflow.backend.exception.ResourceNotFoundException;
+import com.fixflow.backend.exception.DuplicateResourceException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,6 +16,7 @@ import java.util.List;
 @Transactional
 public class CategorieService implements ICategorieService {
 
+    private static final Logger logger = LoggerFactory.getLogger(CategorieService.class);
     private final CategorieRepository categorieRepository;
 
     public CategorieService(CategorieRepository categorieRepository) {
@@ -24,12 +29,12 @@ public class CategorieService implements ICategorieService {
 
     public Categorie findById(Long id) {
         return categorieRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Catégorie non trouvée avec l'ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Catégorie", id));
     }
 
     public Categorie create(Categorie categorie) {
         if (categorieRepository.existsByNom(categorie.getNom())) {
-            throw new RuntimeException("Une catégorie avec ce nom existe déjà.");
+            throw new DuplicateResourceException("Catégorie", "nom", categorie.getNom());
         }
         return categorieRepository.save(categorie);
     }
@@ -37,7 +42,7 @@ public class CategorieService implements ICategorieService {
     public Categorie update(Long id, Categorie categorieDetails) {
         Categorie categorie = findById(id);
         if (!categorie.getNom().equals(categorieDetails.getNom()) && categorieRepository.existsByNom(categorieDetails.getNom())) {
-            throw new RuntimeException("Une catégorie avec ce nom existe déjà.");
+            throw new DuplicateResourceException("Catégorie", "nom", categorieDetails.getNom());
         }
         categorie.setNom(categorieDetails.getNom());
         return categorieRepository.save(categorie);
@@ -50,18 +55,18 @@ public class CategorieService implements ICategorieService {
     }
 
     public void initializeDefaultCategories() {
-        System.out.println("Vérification de l'initialisation des catégories...");
+        logger.info("Vérification de l'initialisation des catégories...");
         if (categorieRepository.count() == 0) {
-            System.out.println("Aucune catégorie trouvée, initialisation des valeurs par défaut...");
+            logger.info("Aucune catégorie trouvée, initialisation des valeurs par défaut...");
             String[] defaultCategories = {"Technique", "Compte", "Facturation", "Autre"};
             for (String nom : defaultCategories) {
                 if (!categorieRepository.existsByNom(nom)) {
                     categorieRepository.save(new Categorie(nom));
-                    System.out.println("Catégorie créée: " + nom);
+                    logger.info("Catégorie créée: {}", nom);
                 }
             }
         } else {
-            System.out.println("Catégories déjà présentes: " + categorieRepository.count());
+            logger.info("Catégories déjà présentes: {}", categorieRepository.count());
         }
     }
 }

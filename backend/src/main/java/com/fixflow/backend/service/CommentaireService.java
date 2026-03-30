@@ -8,6 +8,9 @@ import com.fixflow.backend.entity.User;
 
 import com.fixflow.backend.repository.CommentaireRepository;
 import com.fixflow.backend.service.interfaces.ICommentaireService;
+import com.fixflow.backend.mapper.CommentMapper;
+import com.fixflow.backend.exception.ResourceNotFoundException;
+import com.fixflow.backend.exception.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,28 +25,31 @@ public class  CommentaireService  implements ICommentaireService {
     private final CommentaireRepository commentaireRepository;
     private final TicketService ticketService;
     private final UserService userService;
+    private final CommentMapper commentMapper;
     
     public CommentaireService(CommentaireRepository commentaireRepository, 
                              TicketService ticketService, 
-                             UserService userService) {
+                             UserService userService,
+                             CommentMapper commentMapper) {
         this.commentaireRepository = commentaireRepository;
         this.ticketService = ticketService;
         this.userService = userService;
+        this.commentMapper = commentMapper;
     }
     
     public List<CommentResponse> findAll() {
         return commentaireRepository.findAll().stream()
-                .map(this::mapToResponse)
+                .map(commentMapper::toResponse)
                 .collect(Collectors.toList());
     }
     
     public CommentResponse findResponseById(Long id) {
-        return mapToResponse(findById(id));
+        return commentMapper.toResponse(findById(id));
     }
 
     public Commentaire findById(Long id) {
         return commentaireRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Commentaire non trouvé avec l'ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Commentaire", id));
     }
     
     public CommentResponse create(CommentRequest request, Long ticketId) {
@@ -56,23 +62,22 @@ public class  CommentaireService  implements ICommentaireService {
         boolean estAdmin = auteur.getRole().getNom().equals("ADMIN");
 
         if (!estAuteur && !estAdmin) {
-            throw new RuntimeException("Accès refusé : Seul l'auteur du ticket ou un administrateur peut ajouter un commentaire.");
+            throw new AccessDeniedException("Seul l'auteur du ticket ou un administrateur peut ajouter un commentaire.");
         }
         
-        Commentaire commentaire = new Commentaire();
-        commentaire.setContenu(request.getContenu());
+        Commentaire commentaire = commentMapper.toEntity(request);
 
         commentaire.setTicket(ticket);
         commentaire.setAuteur(auteur);
         
-        return mapToResponse(commentaireRepository.save(commentaire));
+        return commentMapper.toResponse(commentaireRepository.save(commentaire));
     }
     
     public CommentResponse update(Long id, CommentRequest request) {
         Commentaire commentaire = findById(id);
         commentaire.setContenu(request.getContenu());
 
-        return mapToResponse(commentaireRepository.save(commentaire));
+        return commentMapper.toResponse(commentaireRepository.save(commentaire));
     }
     
     public void delete(Long id) {
@@ -83,21 +88,13 @@ public class  CommentaireService  implements ICommentaireService {
     public List<CommentResponse> findByTicket(Long ticketId) {
         Ticket ticket = ticketService.findById(ticketId);
         return commentaireRepository.findByTicket(ticket).stream()
-                .map(this::mapToResponse)
+                .map(commentMapper::toResponse)
                 .collect(Collectors.toList());
     }
     
 
     
-    public CommentResponse mapToResponse(Commentaire commentaire) {
-        return CommentResponse.builder()
-                .id(commentaire.getId())
-                .contenu(commentaire.getContenu())
-                .date(commentaire.getDate())
 
-                .auteurNom(commentaire.getAuteur().getNom())
-                .build();
-    }
 
     public long countByTicket(Long ticketId) {
         return commentaireRepository.countByTicket(ticketId);

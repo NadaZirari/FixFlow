@@ -5,6 +5,8 @@ import com.fixflow.backend.entity.Role;
 import com.fixflow.backend.repository.UserRepository;
 import com.fixflow.backend.service.RoleService;
 import com.fixflow.backend.service.interfaces.IUserService;
+import com.fixflow.backend.exception.ResourceNotFoundException;
+import com.fixflow.backend.exception.DuplicateResourceException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,17 +33,17 @@ public class UserService implements IUserService {
     
     public User findById(Long id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé avec l'ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Utilisateur", id));
     }
     
     public User findByEmail(String email) {
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé avec l'email: " + email));
+                .orElseThrow(() -> new ResourceNotFoundException("Utilisateur", "email", email));
     }
     
     public User create(User user) {
         if (userRepository.existsByEmail(user.getEmail())) {
-            throw new RuntimeException("Email déjà utilisé: " + user.getEmail());
+            throw new DuplicateResourceException("Utilisateur", "email", user.getEmail());
         }
         
         if (user.getRole() == null || user.getRole().getNom() == null) {
