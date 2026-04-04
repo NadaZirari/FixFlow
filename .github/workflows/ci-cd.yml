@@ -6,9 +6,6 @@ on:
   pull_request:
     branches: [ "main", "master" ]
 
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-
 jobs:
   backend-build:
     runs-on: ubuntu-latest
@@ -25,18 +22,21 @@ jobs:
 
   frontend-build:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontEnd
     steps:
     - uses: actions/checkout@v4
     - name: Set up Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: 20
+        node-version: 22
         cache: 'npm'
         cache-dependency-path: frontEnd/package-lock.json
     - name: Install dependencies
-      run: npm install --prefix frontEnd
+      run: npm install
     - name: Build Angular
-      run: npm run build --prefix frontEnd -- --configuration production
+      run: npm run build -- --configuration production
 
   docker-verify:
     runs-on: ubuntu-latest
