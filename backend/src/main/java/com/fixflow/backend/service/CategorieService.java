@@ -1,6 +1,9 @@
 package com.fixflow.backend.service;
 
+import com.fixflow.backend.dto.CategorieRequest;
+import com.fixflow.backend.dto.CategorieResponse;
 import com.fixflow.backend.entity.Categorie;
+import com.fixflow.backend.mapper.CategorieMapper;
 import com.fixflow.backend.repository.CategorieRepository;
 import com.fixflow.backend.service.interfaces.ICategorieService;
 import com.fixflow.backend.exception.ResourceNotFoundException;
@@ -18,39 +21,51 @@ public class CategorieService implements ICategorieService {
 
     private static final Logger logger = LoggerFactory.getLogger(CategorieService.class);
     private final CategorieRepository categorieRepository;
+    private final CategorieMapper categorieMapper;
 
-    public CategorieService(CategorieRepository categorieRepository) {
+    public CategorieService(CategorieRepository categorieRepository, CategorieMapper categorieMapper) {
         this.categorieRepository = categorieRepository;
+        this.categorieMapper = categorieMapper;
     }
 
-    public List<Categorie> findAll() {
-        return categorieRepository.findAll();
+    @Override
+    public List<CategorieResponse> findAll() {
+        return categorieMapper.toResponseList(categorieRepository.findAll());
     }
 
+    @Override
+    public CategorieResponse getCategorieResponseById(Long id) {
+        return categorieMapper.toResponse(findById(id));
+    }
+
+    @Override
     public Categorie findById(Long id) {
         return categorieRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Catégorie", id));
     }
 
-    public Categorie create(Categorie categorie) {
-        if (categorieRepository.existsByNom(categorie.getNom())) {
-            throw new DuplicateResourceException("Catégorie", "nom", categorie.getNom());
+    @Override
+    public CategorieResponse create(CategorieRequest request) {
+        if (categorieRepository.existsByNom(request.getNom())) {
+            throw new DuplicateResourceException("Catégorie", "nom", request.getNom());
         }
-        return categorieRepository.save(categorie);
+        Categorie categorie = categorieMapper.toEntity(request);
+        return categorieMapper.toResponse(categorieRepository.save(categorie));
     }
 
-    public Categorie update(Long id, Categorie categorieDetails) {
+    @Override
+    public CategorieResponse update(Long id, CategorieRequest request) {
         Categorie categorie = findById(id);
-        if (!categorie.getNom().equals(categorieDetails.getNom()) && categorieRepository.existsByNom(categorieDetails.getNom())) {
-            throw new DuplicateResourceException("Catégorie", "nom", categorieDetails.getNom());
+        if (!categorie.getNom().equals(request.getNom()) && categorieRepository.existsByNom(request.getNom())) {
+            throw new DuplicateResourceException("Catégorie", "nom", request.getNom());
         }
-        categorie.setNom(categorieDetails.getNom());
-        return categorieRepository.save(categorie);
+        categorie.setNom(request.getNom());
+        return categorieMapper.toResponse(categorieRepository.save(categorie));
     }
 
+    @Override
     public void delete(Long id) {
         Categorie categorie = findById(id);
-        // Ensure no tickets are attached before deleting in a real-world scenario (can be handled by DB or explicit checks)
         categorieRepository.delete(categorie);
     }
 

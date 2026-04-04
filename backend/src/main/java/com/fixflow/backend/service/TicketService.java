@@ -2,7 +2,6 @@ package com.fixflow.backend.service;
 
 import com.fixflow.backend.dto.TicketRequest;
 import com.fixflow.backend.dto.TicketResponse;
-import com.fixflow.backend.dto.UserTicketStatsDto;
 import com.fixflow.backend.dto.UserDto;
 import com.fixflow.backend.entity.Ticket;
 import com.fixflow.backend.entity.User;
