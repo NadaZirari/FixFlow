@@ -137,6 +137,53 @@
               </tr>
             </tbody>
           </table>
+
+          <!-- Pagination Footer -->
+          <div class="bg-gray-50/50 border-t border-gray-100 px-8 py-6 flex items-center justify-between">
+            <div class="flex items-center gap-4">
+              <span class="text-[0.65rem] font-black text-gray-400 uppercase tracking-widest">
+                Page {{ currentPage + 1 }} sur {{ totalPages }}
+              </span>
+              <div class="h-4 w-px bg-gray-200"></div>
+              <span class="text-[0.65rem] font-black text-gray-400 uppercase tracking-widest">
+                Total : {{ totalElements }} tickets
+              </span>
+            </div>
+            
+            <div class="flex items-center gap-2">
+              <button 
+                (click)="onPageChange(currentPage - 1)"
+                [disabled]="currentPage === 0"
+                class="p-2 rounded-xl border border-gray-200 bg-white text-gray-400 hover:text-blue-600 hover:border-blue-200 disabled:opacity-30 disabled:cursor-not-allowed transition-all active:scale-90"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+              
+              <div class="flex items-center gap-1">
+                <button 
+                  *ngFor="let p of [].constructor(totalPages); let i = index"
+                  (click)="onPageChange(i)"
+                  [class]="i === currentPage 
+                    ? 'w-8 h-8 rounded-xl bg-gray-900 text-white text-[0.7rem] font-black shadow-lg shadow-gray-200' 
+                    : 'w-8 h-8 rounded-xl bg-white border border-gray-100 text-gray-400 text-[0.7rem] font-black hover:bg-gray-50 transition-all active:scale-90'"
+                >
+                  {{ i + 1 }}
+                </button>
+              </div>
+
+              <button 
+                (click)="onPageChange(currentPage + 1)"
+                [disabled]="currentPage >= totalPages - 1"
+                class="p-2 rounded-xl border border-gray-200 bg-white text-gray-400 hover:text-blue-600 hover:border-blue-200 disabled:opacity-30 disabled:cursor-not-allowed transition-all active:scale-90"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>

@@ -61,10 +61,12 @@ export class AuthService {
     );
   }
 
-  logout(): void {
+  logout(redirect: boolean = true): void {
     localStorage.removeItem('token');
     localStorage.removeItem('currentUser');
     this.currentUserSubject.next(null);
-    this.router.navigate(['/']);
+    if (redirect) {
+      this.router.navigate(['/']);
+    }
   }
 }

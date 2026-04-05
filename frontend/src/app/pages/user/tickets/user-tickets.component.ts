@@ -19,6 +19,12 @@ export class UserTicketsComponent implements OnInit {
   searchQuery = '';
   selectedStatus = 'ALL';
 
+  // Pagination state
+  currentPage = 0;
+  pageSize = 4;
+  totalElements = 0;
+  totalPages = 0;
+
   constructor(private ticketService: TicketService, private router: Router) {}
 
   navigateToEdit(id?: number): void {
@@ -33,9 +39,11 @@ export class UserTicketsComponent implements OnInit {
 
   loadTickets(): void {
     this.loading = true;
-    this.ticketService.getMyTickets().subscribe({
-      next: (res: any) => {
-        this.tickets = res;
+    this.ticketService.getMyTicketsPaged(this.currentPage, this.pageSize).subscribe({
+      next: (res) => {
+        this.tickets = res.content;
+        this.totalElements = res.totalElements;
+        this.totalPages = res.totalPages;
         this.applyFilter();
         this.loading = false;
       },
@@ -44,6 +52,11 @@ export class UserTicketsComponent implements OnInit {
         this.loading = false;
       }
     });
+  }
+
+  onPageChange(page: number): void {
+    this.currentPage = page;
+    this.loadTickets();
   }
 
   onStatusChange(event: any): void {

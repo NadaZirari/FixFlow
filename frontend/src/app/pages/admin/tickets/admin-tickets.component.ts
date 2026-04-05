@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { TicketService } from '../../../services/ticket.service';
-import { Ticket } from '../../../models/ticket.model';
+import { Ticket, PagedResponse } from '../../../models/ticket.model';
 
 @Component({
   selector: 'app-admin-tickets',
@@ -12,6 +12,7 @@ import { Ticket } from '../../../models/ticket.model';
   templateUrl: './admin-tickets.component.html'
 })
 export class AdminTicketsComponent implements OnInit {
+  ticketsForStats: Ticket[] = [];
   tickets: Ticket[] = [];
   filteredTickets: Ticket[] = [];
   loading = true;
@@ -19,10 +20,50 @@ export class AdminTicketsComponent implements OnInit {
   selectedStatus = 'ALL';
   searchQuery = '';
 
+  currentPage = 0;
+  pageSize = 4;
+  totalElements = 0;
+  totalPages = 0;
+
   constructor(private ticketService: TicketService) {}
 
   ngOnInit(): void {
+    this.loadStats();
     this.loadTickets();
+  }
+
+  loadStats(): void {
+    this.ticketService.getAllTickets().subscribe(res => {
+      this.ticketsForStats = res;
+    });
+  }
+
+  loadTickets(): void {
+    this.loading = true;
+    this.ticketService.getTicketsPaged(this.currentPage, this.pageSize).subscribe({
+      next: (res: PagedResponse<Ticket>) => {
+        this.tickets = res.content;
+        this.totalElements = res.totalElements;
+        this.totalPages = res.totalPages;
+        this.applyFilter();
+        this.loading = false;
+      },
+      error: (err: any) => {
+        console.error('Erreur chargement tickets:', err);
+        this.loading = false;
+      }
+    });
+  }
+
+  onPageChange(page: number): void {
+    if (page >= 0 && page < this.totalPages) {
+      this.currentPage = page;
+      this.loadTickets();
+    }
+  }
+
+  getPageNumbers(): number[] {
+    return Array.from({ length: this.totalPages }, (_, i) => i);
   }
 
   getInitials(name: string): string {
@@ -45,40 +86,27 @@ export class AdminTicketsComponent implements OnInit {
   }
 
   getOpenCount(): number {
-    return this.tickets.filter(t => t.statut === 'OUVERT' || t.statut === 'EN_COURS').length;
+    return this.ticketsForStats.filter(t => t.statut === 'OUVERT' || t.statut === 'EN_COURS').length;
   }
 
   getCriticalCount(): number {
-    return this.tickets.filter(t => t.priorite === 'CRITIQUE').length;
+    return this.ticketsForStats.filter(t => t.priorite === 'CRITIQUE').length;
   }
 
   getResolvedCount(): number {
-    return this.tickets.filter(t => t.statut === 'RESOLU').length;
-  }
-
-  loadTickets(): void {
-    this.loading = true;
-    this.ticketService.getAllTickets().subscribe({
-      next: (res: any) => {
-        this.tickets = res;
-        this.applyFilter();
-        this.loading = false;
-      },
-      error: (err: any) => {
-        console.error('Erreur chargement tickets:', err);
-        this.loading = false;
-      }
-    });
+    return this.ticketsForStats.filter(t => t.statut === 'RESOLU').length;
   }
 
   onPriorityFilterChange(event: any): void {
     this.selectedPriority = event.target.value;
-    this.applyFilter();
+    this.currentPage = 0; // Reset to first page on filter
+    this.loadTickets();
   }
 
   onStatusFilterChange(event: any): void {
     this.selectedStatus = event.target.value;
-    this.applyFilter();
+    this.currentPage = 0; // Reset to first page on filter
+    this.loadTickets();
   }
 
   applyFilter(): void {

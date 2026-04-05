@@ -5,6 +5,9 @@ import com.fixflow.backend.dto.TicketResponse;
 import com.fixflow.backend.enums.StatutTicket;
 import com.fixflow.backend.service.TicketService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -33,16 +36,30 @@ public class TicketController {
         return ResponseEntity.ok(ticketService.createTicket(request, null));
     }
 
-    @GetMapping("/my")
-    @PreAuthorize("hasAuthority('ROLE_USER')")
     public ResponseEntity<List<TicketResponse>> getMyTickets() {
         return ResponseEntity.ok(ticketService.getMyTickets());
+    }
+
+    @GetMapping("/my/paged")
+    @PreAuthorize("hasAuthority('ROLE_USER')")
+    public ResponseEntity<Page<TicketResponse>> getMyTicketsPaged(
+            @PageableDefault(sort = "id", direction = org.springframework.data.domain.Sort.Direction.DESC) Pageable pageable
+    ) {
+        return ResponseEntity.ok(ticketService.getMyPagedTickets(pageable));
     }
 
     @GetMapping
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<List<TicketResponse>> getAllTickets() {
         return ResponseEntity.ok(ticketService.getAllTickets());
+    }
+
+    @GetMapping("/paged")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<Page<TicketResponse>> getTicketsPaged(
+            @PageableDefault(sort = "id", direction = org.springframework.data.domain.Sort.Direction.DESC) Pageable pageable
+    ) {
+        return ResponseEntity.ok(ticketService.getPagedTickets(pageable));
     }
 
     @GetMapping("/{id}")

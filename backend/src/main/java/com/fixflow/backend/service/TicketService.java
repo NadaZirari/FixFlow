@@ -16,6 +16,8 @@ import com.fixflow.backend.mapper.UserMapper;
 import com.fixflow.backend.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -85,10 +87,26 @@ public class TicketService implements ITicketService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public Page<TicketResponse> getMyPagedTickets(Pageable pageable) {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Utilisateur", "email", email));
+        
+        return ticketRepository.findByUser(user, pageable)
+                .map(ticketMapper::toResponse);
+    }
+
     public List<TicketResponse> getAllTickets() {
         return ticketRepository.findAll().stream()
                 .map(ticketMapper::toResponse)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Page<TicketResponse> getPagedTickets(Pageable pageable) {
+        return ticketRepository.findAll(pageable)
+                .map(ticketMapper::toResponse);
     }
 
 

@@ -22,3 +22,11 @@ export interface TicketRequest {
   priorite: PrioriteTicket;
   categorieId?: number;
 }
+
+export interface PagedResponse<T> {
+  content: T[];
+  totalElements: number;
+  totalPages: number;
+  size: number;
+  number: number;
+}

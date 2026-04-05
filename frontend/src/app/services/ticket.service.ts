@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Ticket, TicketRequest } from '../models/ticket.model';
+import { Ticket, TicketRequest, PagedResponse } from '../models/ticket.model';
 
 export type { Ticket, TicketRequest };
 
@@ -30,8 +30,22 @@ export class TicketService {
     return this.http.get<Ticket[]>(this.API);
   }
 
+  getTicketsPaged(page: number, size: number): Observable<PagedResponse<Ticket>> {
+    const params = new HttpParams()
+      .set('page', page.toString())
+      .set('size', size.toString());
+    return this.http.get<PagedResponse<Ticket>>(`${this.API}/paged`, { params });
+  }
+
   getMyTickets(): Observable<Ticket[]> {
     return this.http.get<Ticket[]>(`${this.API}/my`);
+  }
+
+  getMyTicketsPaged(page: number, size: number): Observable<PagedResponse<Ticket>> {
+    const params = new HttpParams()
+      .set('page', page.toString())
+      .set('size', size.toString());
+    return this.http.get<PagedResponse<Ticket>>(`${this.API}/my/paged`, { params });
   }
 
   getById(id: number): Observable<Ticket> {
