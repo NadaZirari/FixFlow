@@ -36,6 +36,8 @@ public class TicketController {
         return ResponseEntity.ok(ticketService.createTicket(request, null));
     }
 
+    @GetMapping("/my")
+    @PreAuthorize("hasAuthority('ROLE_USER')")
     public ResponseEntity<List<TicketResponse>> getMyTickets() {
         return ResponseEntity.ok(ticketService.getMyTickets());
     }
